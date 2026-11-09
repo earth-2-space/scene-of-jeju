@@ -1,26 +1,129 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * 씬오브제주 어드민 토큰
+ * 매일 쓰는 화면이라 흰 바탕에 먹 글자, 포인트는 쪽빛 하나로 단출하게 둬요.
+ * 브랜드 색(쪽빛·이끼)은 리추얼 구분과 주요 액션에만 써요.
+ * 기본 팔레트는 지워서 토큰 밖의 색이 섞이지 않게 해요.
+ */
+@theme {
+  --color-*: initial;
+  --color-paper: #ffffff; /* 바탕 */
+  --color-sheet: #f7f6f3; /* 보조 면·hover */
+  --color-sheet-2: #efede8; /* 칩·말풍선 */
+  --color-ink: #262521; /* 먹: 글자·주요 버튼 */
+  --color-ink-2: #5b5850;
+  --color-ink-3: #8f8b82;
+  --color-line: #e2dfd8; /* 구분선 */
+  --color-line-2: #eeebe5;
+  --color-jjok: #2f4a73; /* 쪽빛: 포인트, 블루 리추얼, 확인 필요 */
+  --color-jjok-soft: #e8edf4;
+  --color-moss: #767a5f; /* 이끼: 식물 리추얼 */
+  --color-moss-soft: #eeefe8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:
+    var(--font-pretendard), -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    /* 숫자는 고정폭으로 줄을 맞춰요 */
+    font-feature-settings: "tnum" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-jjok);
+    outline-offset: 2px;
+  }
+
+  dialog::backdrop {
+    background: rgb(38 37 33 / 0.24);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* 버튼: 테두리 / 채움 먹 / 주요 액션 쪽빛 */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  cursor: pointer;
+  &:hover {
+    border-color: var(--color-ink-3);
+  }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+}
+@utility btn-fill {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
+  &:hover {
+    border-color: var(--color-ink);
+    opacity: 0.9;
+  }
+}
+@utility btn-jjok {
+  background: var(--color-jjok);
+  border-color: var(--color-jjok);
+  color: var(--color-paper);
+  &:hover {
+    border-color: var(--color-jjok);
+    opacity: 0.9;
+  }
+}
+
+/* 입력칸 */
+@utility field {
+  width: 100%;
+  border: 1px solid var(--color-line);
+  border-radius: 8px;
+  background: var(--color-paper);
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--color-ink);
+  &::placeholder {
+    color: var(--color-ink-3);
+  }
+  &:focus-visible {
+    outline: none;
+    border-color: var(--color-jjok);
+    box-shadow: 0 0 0 3px var(--color-jjok-soft);
+  }
+}
+
+@utility field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-ink-2);
+}
+
+/* 회색 작은 설명 */
+@utility hint {
+  font-size: 12px;
+  color: var(--color-ink-3);
 }
