@@ -1,0 +1,159 @@
+<title>씬오브제주 10/29 회의록</title>
+<style>
+@font-face{font-family:"Pretendard Variable";src:url("fonts/PretendardVariable.woff2") format("woff2-variations");font-weight:45 920;font-display:swap}
+/* 앞선 계획안·무드 시안과 같은 종이 한 장의 세계. 다크 테마는 일부러 두지 않아요. */
+:root{
+  color-scheme:light;
+  --paper:#EAE6DE; --sheet:#F3F0EA; --sheet-2:#E2DDD3;
+  --ink:#262521; --ink-2:#5B5850; --ink-3:#8F8B82;
+  --line:#CFC8BB; --line-2:#DDD7CC;
+  --jjok:#2F4A73; --jjok-soft:#D9DEE6; --moss:#767A5F; --moss-soft:#DFE0D3;
+  --warn:#8A5A12; --warn-soft:#EFE3CC;
+  --f:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 .2 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);background-image:var(--grain);color:var(--ink);font-family:var(--f);font-size:15.5px;line-height:1.7;font-feature-settings:"tnum" 1;letter-spacing:-.005em;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding-inline:28px;padding-block:0 96px}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+header.top{padding-block:60px 28px;border-bottom:1px solid var(--ink)}
+.form-line{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px;color:var(--ink-3);margin-bottom:28px}
+.form-line span b{color:var(--ink);font-weight:500;border-bottom:1px solid var(--line);padding:0 6px 2px;margin-left:6px}
+h1{font-size:clamp(32px,5vw,46px);font-weight:250;letter-spacing:-.04em;line-height:1.12;margin:0 0 20px;text-wrap:balance}
+h1 b{font-weight:600}
+.summary{margin:0;font-size:18px;font-weight:300;letter-spacing:-.015em;line-height:1.65;max-width:52ch;border-left:1px solid var(--ink);padding-left:18px}
+.summary b{font-weight:600}
+section{padding-top:48px}
+h2{display:flex;align-items:baseline;gap:12px;font-size:22px;font-weight:300;letter-spacing:-.03em;margin:0 0 14px}
+h2 .k{font-size:13px;font-weight:500;color:var(--jjok);letter-spacing:0}
+h2 .c{font-size:13px;font-weight:400;color:var(--ink-3);letter-spacing:0;margin-left:auto}
+
+.order{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:22px;font-size:14px}
+.order span.s{padding:5px 12px;border:1px solid var(--ink);border-radius:999px;font-weight:500}
+.order span.s:first-child{background:var(--ink);color:var(--sheet)}
+.order .a{color:var(--ink-3)}
+.order .t{margin-left:6px;color:var(--ink-3);font-size:13px}
+
+dl.dec{margin:0;border-top:1px solid var(--ink)}
+dl.dec div{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+@media (max-width:600px){dl.dec div{grid-template-columns:1fr;gap:2px}}
+dl.dec dt{font-size:14px;font-weight:600}
+dl.dec dd{margin:0;font-size:14.5px;color:var(--ink-2)}
+dl.dec dd .why{display:block;font-size:13px;color:var(--ink-3)}
+
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:640px){.scope{grid-template-columns:1fr}}
+.scope > div{background:var(--sheet);border:1px solid var(--line-2);padding:16px 18px}
+.scope h3{margin:0 0 8px;font-size:15px;font-weight:600}
+.scope ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink-2)}
+.scope ul li{margin:2px 0}
+.scope .full{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:16px;background:none;border:0;padding:0}
+@media (max-width:640px){.scope .full{grid-template-columns:1fr}}
+.scope .full > div{border-top:1px solid var(--ink);padding-top:10px;font-size:14px;color:var(--ink-2)}
+.scope .full b{display:block;color:var(--ink);font-weight:600}
+
+ul.hold{list-style:none;margin:0;padding:0;border-top:1px solid var(--ink)}
+ul.hold li{display:grid;grid-template-columns:1fr auto;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;align-items:baseline}
+ul.hold li span{font-size:12.5px;color:var(--ink-3);white-space:nowrap}
+
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+@media (max-width:640px){.acts{grid-template-columns:1fr}}
+.acts h3{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;font-weight:600;margin:0;border-bottom:1px solid var(--ink);padding-bottom:8px}
+.acts h3 span{font-size:12px;font-weight:400;color:var(--ink-3)}
+.acts ul{list-style:none;margin:0;padding:0}
+.acts li{display:grid;grid-template-columns:18px 1fr auto;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink-2);align-items:baseline}
+.acts li::before{content:"";width:11px;height:11px;border:1px solid var(--ink-2);transform:translateY(1px)}
+.acts li b{color:var(--ink);font-weight:600}
+.acts li .due{font-size:12px;font-weight:600;color:var(--jjok);white-space:nowrap}
+
+.cycle{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--ink)}
+@media (max-width:640px){.cycle{grid-template-columns:1fr 1fr}}
+.cycle div{padding:12px 14px 12px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-2)}
+.cycle b{display:block;color:var(--ink);font-weight:600;font-size:15px}
+.cycle .n{font-size:12px;color:var(--jjok);font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:16px;font-size:14px;color:var(--ink-2)}
+.meta b{color:var(--ink);font-weight:600;margin-right:6px}
+footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="form-line"><span>No.<b>회의록</b></span><span>Date.<b>2026.10.29</b></span><span>With.<b>씬오브제주 · D:bo</b></span></div>
+  <h1>씬오브제주 <b>10/29 회의 정리</b></h1>
+  <p class="summary">아임웹 대신 <b>자체 웹앱을 새로 짓기로</b> 했어요. 태블릿 워크북과 카카오 자동 발송을 잇는 운영 자동화가 핵심이고, 3개월 안에 마무리해요. 계약서와 선입금은 <b>10월 31일까지.</b></p>
+  <div class="order"><span class="s">어드민</span><span class="a">→</span><span class="s">고객용 웹</span><span class="a">→</span><span class="s">홈페이지 교체</span><span class="t">3개월 이내 · 11.02 착수</span></div>
+</header>
+
+<section>
+  <h2><span class="k">1</span>결정 사항<span class="c">8</span></h2>
+  <dl class="dec">
+    <div><dt>플랫폼</dt><dd>아임웹을 그만 쓰고 자체 웹앱으로 전환<span class="why">어드민을 마음대로 다루기 어렵고, 기능 연동에 한계가 있어서</span></dd></div>
+    <div><dt>홈페이지 구조</dt><dd>기존 5개 탭은 유지하고, 숨겨진 6번째 탭을 고객용 웹페이지로 써요</dd></div>
+    <div><dt>도메인</dt><dd>기존 도메인을 연장해 두고, 새 웹앱이 완성되면 도메인을 바꿔 배포해요</dd></div>
+    <div><dt>워크북</dt><dd>종이 프린트물과 태블릿 디지털 워크북을 같이 써요. 접속은 QR 또는 미리 보낸 링크로</dd></div>
+    <div><dt>단체 클래스</dt><dd>모바일용 폼 페이지를 따로 만들어 링크로 공유하고, 답이 어드민 DB로 들어와요</dd></div>
+    <div><dt>탄생기록 게시</dt><dd>고객이 올리고 → 대표님이 승인하면 → 홈페이지에 자동 게시</dd></div>
+    <div><dt>안내 발송</dt><dd>카카오로 사전·사후 안내, 외국인 손님은 이메일도 같이</dd></div>
+    <div><dt>부가세</dt><dd>별도로 확정</dd></div>
+  </dl>
+</section>
+
+<section>
+  <h2><span class="k">2</span>1차 기능 범위</h2>
+  <div class="scope">
+    <div><h3>어드민</h3><ul><li>예약 보드 (네이버·직접 예약 통합)</li><li>방문 / 노쇼 / 취소 상태 관리</li><li>고객 상세 메모</li><li>탄생기록 DB</li><li>카카오 발송</li></ul></div>
+    <div><h3>고객용 웹</h3><ul><li>예약 폼</li><li>워크북 (다국어)</li><li>탄생기록 업로드</li><li>작품 갤러리 (리추얼 페이지)</li></ul></div>
+    <div class="full">
+      <div><b>자동화 우선순위</b>예약 확정 알림과 사후 발송 자동화, 리추얼 페이지 자동 업로드가 가장 먼저예요.</div>
+      <div><b>영상 가이드</b>기존 4개 국어 영상은 메인 TV에서 틀고, 태블릿은 워크북 용도로 같이 써요.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="k">3</span>확인이 필요한 것<span class="c">3</span></h2>
+  <ul class="hold">
+    <li>카카오 비즈니스 인증 여부 <span>심사 시간이 걸릴 수 있어요 · 씬오브제주</span></li>
+    <li>D:bo 사업자 업종에 시각 디자인업 추가 가능 여부 <span>세무사 확인 · D:bo</span></li>
+    <li>네이버·카카오가 여는 데이터 범위(API) 확인 후, 다이렉트 예약으로 바꿀지 결정 <span>보류</span></li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="k">4</span>할 일</h2>
+  <div class="acts">
+    <div>
+      <h3>D:bo <span>5</span></h3>
+      <ul>
+        <li><span><b>계약서 초안 · 3개월 타임라인 · 어드민 기능 목록</b> 발송</span><span class="due">10.30 금</span></li>
+        <li><span>착수 전 준비사항 리스트 (구글 계정·서버 등) 같이 발송</span><span class="due">10.30 금</span></li>
+        <li><span>카카오 개발자 권한 받아 채널 세팅</span><span></span></li>
+        <li><span>사업자 업종 추가 여부 세무사 확인</span><span></span></li>
+        <li><span>디자인 기준 툴(MD 파일) 공유</span><span></span></li>
+      </ul>
+    </div>
+    <div>
+      <h3>씬오브제주 · boram <span>5</span></h3>
+      <ul>
+        <li><span><b>계약서 검토 · 피드백 → 서명 · 입금</b></span><span class="due">10.31</span></li>
+        <li><span>아임웹 홈페이지 접근 권한 D:bo에 공유 (페이지 복사용)</span><span></span></li>
+        <li><span>카카오 비즈니스 인증 여부 확인</span><span></span></li>
+        <li><span>보유 중인 DB·디자인 자료 전부 드라이브에 업로드</span><span></span></li>
+        <li><span>D:bo의 디자인 기준 툴(MD)로 브랜드 스타일 가이드 작성</span><span></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="k">5</span>앞으로 일하는 방식</h2>
+  <div class="cycle">
+    <div><span class="n">1</span><b>화면 초안</b>D:bo가 매주 화면을 만들어요</div>
+    <div><span class="n">2</span><b>3일 안에 공유</b>노션·슬랙 등 협업 도구로</div>
+    <div><span class="n">3</span><b>수정</b>비동기 피드백 반영</div>
+    <div><span class="n">4</span><b>다음 화면 기획</b>정기 미팅에서 확정</div>
+  </div>
+  <div class="meta"><span><b>착수</b>11월 2일(월)</span><span><b>정기 미팅</b>매주 1회</span><span><b>중간 소통</b>노션 · 슬랙 등 비동기</span></div>
+  <footer><span>씬오브제주 × D:bo · 2026.10.29 회의 정리</span><span>다음 미팅 요일은 첫 주에 정해요</span></footer>
+</section>
+</div>

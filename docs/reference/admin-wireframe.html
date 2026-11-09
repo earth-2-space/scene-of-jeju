@@ -1,0 +1,403 @@
+<title>씬오브제주 어드민 설계</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#ECE8DF; --paper:#F6F3EC; --ink:#1E2126; --ink-2:#4A4E55; --ink-3:#7C7F84;
+  --rule:#D3CDC1; --rule-2:#E2DDD3; --jjok:#2C4A7C; --jjok-soft:#DCE3EE;
+  --wf-bg:#FBFAF7; --wf-fill:#E9E5DC; --wf-line:#BDB6A8;
+  --ok:#3F6B4A; --ok-soft:#DDE8DE; --warn:#8A5A12; --warn-soft:#F1E4CB;
+  --sans:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#17191D; --paper:#1F2227; --ink:#E7E3DA; --ink-2:#B9B5AD; --ink-3:#878A8F;
+    --rule:#353840; --rule-2:#2B2E34; --jjok:#93AEDD; --jjok-soft:#26324A;
+    --wf-bg:#1B1E22; --wf-fill:#2A2D33; --wf-line:#4A4E56;
+    --ok:#8CC19A; --ok-soft:#21352A; --warn:#E0B36A; --warn-soft:#3A2F1C;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#17191D; --paper:#1F2227; --ink:#E7E3DA; --ink-2:#B9B5AD; --ink-3:#878A8F;
+  --rule:#353840; --rule-2:#2B2E34; --jjok:#93AEDD; --jjok-soft:#26324A;
+  --wf-bg:#1B1E22; --wf-fill:#2A2D33; --wf-line:#4A4E56;
+  --ok:#8CC19A; --ok-soft:#21352A; --warn:#E0B36A; --warn-soft:#3A2F1C;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:24px;padding-block:0 96px}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+a{color:var(--jjok)}
+
+header.top{padding-block:56px 28px;border-bottom:1px solid var(--rule)}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--ink-3)}
+h1{font-size:32px;line-height:1.25;font-weight:700;margin:10px 0 12px;letter-spacing:-.01em;text-wrap:balance}
+.lede{max-width:60ch;color:var(--ink-2);margin:0}
+
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--rule);margin-inline:-24px;padding-inline:24px}
+@media (max-width:600px){nav.toc{margin-inline:-16px;padding-inline:16px}}
+nav.toc ul{list-style:none;margin:0;padding:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav.toc a{display:block;padding:12px;font-size:14px;color:var(--ink-2);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--jjok);border-bottom-color:var(--jjok);outline:none}
+
+section.part{padding-top:56px;scroll-margin-top:48px}
+h2{font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.01em}
+h2 .k{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--jjok);margin-right:10px;vertical-align:2px}
+.sub{color:var(--ink-2);max-width:62ch;margin:0 0 24px}
+h3{font-size:17px;font-weight:600;margin:0}
+
+/* 1. scope */
+.scope{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:820px){.scope{grid-template-columns:1fr}}
+.scope > div{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:16px 18px}
+.scope .n{font-family:var(--mono);font-size:12px;color:var(--jjok)}
+.scope h4{margin:2px 0 8px;font-size:16px}
+.scope ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink-2);display:flex;flex-direction:column;gap:3px}
+.later{margin-top:16px;display:grid;grid-template-columns:110px 1fr;gap:8px 16px;font-size:14px;color:var(--ink-2);padding:16px 18px;border:1px dashed var(--rule);border-radius:6px}
+@media (max-width:600px){.later{grid-template-columns:1fr}}
+.later b{color:var(--ink-3);font-weight:500;font-size:13px}
+
+/* 2. wireframes */
+.wfcard{margin-top:44px;scroll-margin-top:56px}
+.wfhead{display:flex;align-items:baseline;gap:12px;margin-bottom:4px}
+.wfhead .n{font-family:var(--mono);color:var(--jjok);font-size:13px}
+.wfdesc{color:var(--ink-2);font-size:14px;margin:0 0 14px;max-width:64ch}
+.scroller{overflow-x:auto;border-radius:8px}
+.ask{margin-top:10px;font-size:13px;color:var(--ink-3)}
+.ask b{color:var(--warn);font-weight:600;margin-right:6px}
+
+.wf{width:820px;background:var(--wf-bg);border:1px solid var(--wf-line);border-radius:8px;display:grid;grid-template-columns:140px 1fr;font-size:12px;color:var(--ink);line-height:1.45;overflow:hidden}
+.wf-side{border-right:1px solid var(--wf-line);padding:14px 10px;display:flex;flex-direction:column;gap:2px}
+.wf-logo{font-weight:700;font-size:12px;padding:2px 8px 12px;letter-spacing:.02em}
+.wf-nav{padding:6px 8px;border-radius:4px;color:var(--ink-2)}
+.wf-nav.on{background:var(--jjok-soft);color:var(--jjok);font-weight:600}
+.wf-nav.off{color:var(--ink-3);opacity:.55}
+.wf-sep{height:1px;background:var(--wf-line);margin:8px 4px;opacity:.6}
+.wf-main{padding:18px 20px 22px;display:flex;flex-direction:column;gap:14px;min-width:0;min-height:300px}
+.wf-bar{display:flex;align-items:center;gap:8px}
+.wf-title{font-size:15px;font-weight:700;margin-right:auto}
+.btn{display:inline-flex;align-items:center;border:1px solid var(--wf-line);border-radius:4px;padding:5px 10px;font-size:11px;background:var(--wf-bg);color:var(--ink);white-space:nowrap}
+.btn.pri{background:var(--jjok);border-color:var(--jjok);color:var(--paper)}
+.seg{display:inline-flex;border:1px solid var(--wf-line);border-radius:4px;overflow:hidden}
+.seg span{padding:4px 10px;font-size:11px;border-right:1px solid var(--wf-line);color:var(--ink-2)}
+.seg span:last-child{border-right:0}
+.seg span.on{background:var(--ink);color:var(--wf-bg)}
+.field{border:1px solid var(--wf-line);border-radius:4px;padding:6px 8px;color:var(--ink);background:var(--wf-bg);min-height:30px;display:flex;align-items:center}
+.field.auto{background:var(--wf-fill);color:var(--ink-2)}
+.field.big{min-height:52px;align-items:flex-start}
+.flabel{font-size:10px;color:var(--ink-3);margin-bottom:3px}
+.flabel .a{color:var(--jjok);margin-left:4px}
+.box{border:1px solid var(--wf-line);border-radius:6px;padding:12px 14px}
+.box h5{margin:0 0 8px;font-size:11px;font-weight:600;color:var(--ink-2)}
+.img{background:repeating-linear-gradient(135deg,var(--wf-fill) 0 6px,transparent 6px 12px);border:1px solid var(--wf-line);border-radius:4px;display:grid;place-items:center;color:var(--ink-3);font-size:10px}
+.wt{width:100%;border-collapse:collapse;font-size:12px}
+.wt th{text-align:left;font-weight:500;color:var(--ink-3);font-size:10.5px;padding:6px 10px;border-bottom:1px solid var(--wf-line)}
+.wt td{padding:9px 10px;border-bottom:1px solid var(--rule-2);white-space:nowrap}
+.wt tr.day td{background:var(--wf-fill);font-weight:600;font-size:11px;padding:5px 10px;color:var(--ink-2)}
+.wt td.m{font-family:var(--mono)}
+.st{display:inline-block;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500}
+.st.ok{background:var(--ok-soft);color:var(--ok)}
+.st.wait{background:var(--warn-soft);color:var(--warn)}
+.st.info{background:var(--jjok-soft);color:var(--jjok)}
+.st.mute{background:var(--wf-fill);color:var(--ink-3)}
+.muted{color:var(--ink-3)}
+.row{display:flex;gap:16px}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.empty{border:1px dashed var(--wf-line);border-radius:6px;padding:14px;text-align:center;color:var(--ink-3);font-size:11px}
+.bubble{background:var(--wf-fill);border-radius:10px 10px 10px 2px;padding:8px 10px;font-size:11px;line-height:1.55}
+.a5{aspect-ratio:148/210;width:180px;max-width:100%;border:1px solid var(--wf-line);border-radius:2px;padding:14px 12px;display:flex;flex-direction:column;gap:8px}
+.a5 .no{font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.a5 .name{font-size:14px;font-weight:700}
+.a5 .line{font-size:10.5px;border-top:1px solid var(--wf-line);padding-top:7px;margin-top:auto;color:var(--ink-2)}
+.toggle{display:inline-block;width:24px;height:14px;border-radius:7px;background:var(--jjok);position:relative;vertical-align:middle}
+.toggle::after{content:"";position:absolute;right:2px;top:2px;width:10px;height:10px;border-radius:50%;background:var(--wf-bg)}
+
+/* 3. data */
+.erd{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:16px;overflow-x:auto}
+.erd pre.mermaid{margin:0;background:transparent;min-width:620px}
+.ents{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:20px}
+.ent{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:14px 16px}
+.ent .h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.ent .h b{font-size:15px}
+.ent .h code{font-family:var(--mono);font-size:12px;color:var(--jjok)}
+.ent .fields{display:flex;flex-wrap:wrap;gap:6px}
+.ent .fields span{font-size:12.5px;padding:2px 8px;border-radius:3px;background:var(--ground);color:var(--ink-2)}
+.ent .fields span.key{background:var(--jjok-soft);color:var(--jjok)}
+.ent p{margin:8px 0 0;font-size:13px;color:var(--ink-3)}
+.note{margin-top:16px;font-size:14px;color:var(--ink-2)}
+.note code{font-family:var(--mono);font-size:12.5px;background:var(--paper);border:1px solid var(--rule-2);padding:1px 5px;border-radius:3px}
+
+/* 4. questions */
+.qs{list-style:none;padding:0;margin:0;border-top:1px solid var(--rule);counter-reset:q}
+.qs li{counter-increment:q;display:grid;grid-template-columns:40px 1fr;gap:10px;padding:14px 0;border-bottom:1px solid var(--rule)}
+.qs li::before{content:counter(q,decimal-leading-zero);font-family:var(--mono);color:var(--jjok);font-size:14px}
+.qs b{display:block}
+.qs p{margin:0;color:var(--ink-2);font-size:14px}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-3)}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">테이크어냅 · 2026.10.29 미팅용 초안</div>
+  <h1>씬오브제주 어드민 설계</h1>
+  <p class="lede">11월에 쓸 최소한의 어드민이에요. 화면은 여섯 장, 항목은 꼭 필요한 것만 넣었어요. 데이터가 쌓이는 걸 보면서 하나씩 채워가요.</p>
+</header>
+
+<nav class="toc" aria-label="목차">
+  <ul>
+    <li><a href="#req">1 범위</a></li>
+    <li><a href="#wf">2 화면</a></li>
+    <li><a href="#data">3 데이터</a></li>
+    <li><a href="#ask">4 확인할 것</a></li>
+  </ul>
+</nav>
+
+<section class="part" id="req">
+  <h2><span class="k">1</span>11월에 만드는 것</h2>
+  <p class="sub">세 가지만 먼저 만들어요. 나머지는 메뉴 자리만 두고, 쓰시면서 필요해지는 순서대로 열어요.</p>
+  <div class="scope">
+    <div><div class="n">01</div><h4>예약</h4><ul><li>날짜별 예약 보드</li><li>네이버 엑셀 올리기, 직접 입력</li><li>방문·노쇼·취소 체크</li><li>외국인 문의함</li></ul></div>
+    <div><div class="n">02</div><h4>카카오 안내</h4><ul><li>예약 확정 · 하루 전 · 장면이 걸렸어요</li><li>자동 발송, 보낸 내역</li></ul></div>
+    <div><div class="n">03</div><h4>탄생 기록</h4><ul><li>입력, 번호·날씨 자동</li><li>A5 출력</li><li>SCENES 게시 대기</li></ul></div>
+  </div>
+  <div class="later">
+    <b>12월 이후</b><span>재료·도구 재고, 주간 지표 보드, 노쇼 통계, 단체(WITH) 견적, 이달의 장면 발송</span>
+    <b>따로 협의</b><span>염색 테스트 DB, 직원 가이드와 출퇴근</span>
+  </div>
+</section>
+
+<section class="part" id="wf">
+  <h2><span class="k">2</span>화면 여섯 장</h2>
+  <p class="sub">왼쪽 메뉴에서 흐린 항목은 아직 비워둔 자리예요. 이름과 숫자는 예시예요.</p>
+
+  <!-- W1 -->
+  <article class="wfcard" id="w1">
+    <div class="wfhead"><span class="n">W1</span><h3>예약 보드</h3></div>
+    <p class="wfdesc">아침에 여는 첫 화면이에요. 날짜별로 예약이 한 줄씩, 네이버 건과 외국인 문의 건이 같이 보여요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav on">예약</div><div class="wf-nav">탄생 기록</div><div class="wf-nav">안내 발송</div><div class="wf-nav">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">예약</span><span class="btn">네이버 엑셀 올리기</span><span class="btn pri">+ 예약 추가</span></div>
+        <table class="wt">
+          <thead><tr><th>시간</th><th>이름</th><th>리추얼</th><th>인원</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr class="day"><td colspan="5">10/31 금 · 오늘</td></tr>
+            <tr><td class="m">10:00</td><td>김○○</td><td>식물</td><td class="m">2</td><td><span class="st ok">방문</span></td></tr>
+            <tr><td class="m">14:00</td><td>박○○</td><td>블루</td><td class="m">1</td><td><span class="st info">확정</span></td></tr>
+            <tr class="day"><td colspan="5">11/01 토 · 내일</td></tr>
+            <tr><td class="m">10:00</td><td>이○○</td><td>식물</td><td class="m">3</td><td><span class="st info">확정</span></td></tr>
+            <tr><td class="m">16:00</td><td>Emma L.</td><td>블루</td><td class="m">2</td><td><span class="st wait">대기</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>네이버 엑셀에 어떤 열이 나오는지. 샘플 1부 받으면 맞춰요.</p>
+  </article>
+
+  <!-- W2 -->
+  <article class="wfcard" id="w2">
+    <div class="wfhead"><span class="n">W2</span><h3>예약 상세</h3></div>
+    <p class="wfdesc">예약 한 줄을 누르면 열려요. 당일 상태를 체크하고, 보낸 안내를 보고, 바로 탄생 기록으로 넘어가요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav on">예약</div><div class="wf-nav">탄생 기록</div><div class="wf-nav">안내 발송</div><div class="wf-nav">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">박○○ · 10/31 14:00</span><span class="btn">닫기</span></div>
+        <div class="row">
+          <div class="col" style="flex:1.2">
+            <div class="g2">
+              <div><div class="flabel">리추얼</div><div class="field">블루</div></div>
+              <div><div class="flabel">인원</div><div class="field mono">1</div></div>
+            </div>
+            <div><div class="flabel">당일 상태</div><span class="seg"><span>확정</span><span class="on">방문</span><span>노쇼</span><span>취소</span></span></div>
+            <div><div class="flabel">메모</div><div class="field big muted">메모</div></div>
+            <div><span class="btn pri">탄생 기록 쓰기</span></div>
+          </div>
+          <div class="col" style="flex:1">
+            <div class="box"><h5>보낸 안내</h5>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between"><span>예약 확정</span><span class="st ok">보냄</span></div>
+                <div style="display:flex;justify-content:space-between"><span>하루 전</span><span class="st ok">보냄</span></div>
+                <div style="display:flex;justify-content:space-between"><span>장면이 걸렸어요</span><span class="st mute">기록 후</span></div>
+              </div>
+            </div>
+            <div class="box"><h5>지난 방문</h5><div class="muted">06/14 식물 · S-2606-018</div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>SCENES 게시 동의를 언제 받으시는지. 여기에 체크 하나를 둘지 정해요.</p>
+  </article>
+
+  <!-- W3 -->
+  <article class="wfcard" id="w3">
+    <div class="wfhead"><span class="n">W3</span><h3>탄생 기록 입력</h3></div>
+    <p class="wfdesc">설계도의 항목 순서 그대로예요. 번호, 탄생일, 날씨는 자동으로 채워지고, 저장하면 A5 출력과 게시 대기로 넘어가요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav">예약</div><div class="wf-nav on">탄생 기록</div><div class="wf-nav">안내 발송</div><div class="wf-nav">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">새 탄생 기록</span></div>
+        <div class="row">
+          <div class="col" style="flex:1.4">
+            <div class="g3">
+              <div><div class="flabel">No.<span class="a">자동</span></div><div class="field auto mono">S-2610-031</div></div>
+              <div><div class="flabel">탄생일<span class="a">자동</span></div><div class="field auto mono">10.31</div></div>
+              <div><div class="flabel">그날의 자연<span class="a">자동</span></div><div class="field auto">맑음 19℃</div></div>
+            </div>
+            <div class="g2">
+              <div><div class="flabel">이름</div><div class="field">오후의 바다</div></div>
+              <div><div class="flabel">지은 이</div><div class="field">박○○</div></div>
+            </div>
+            <div class="g2">
+              <div><div class="flabel">리추얼</div><div class="field">블루</div></div>
+              <div><div class="flabel">아이템·소재</div><div class="field">손수건 · 면</div></div>
+            </div>
+            <div><div class="flabel">그날의 한 줄</div><div class="field big">세 번째 담갔을 때 비로소 바다가 됐다.</div></div>
+            <div style="display:flex;justify-content:flex-end;gap:8px"><span class="btn">사진 올리기</span><span class="btn pri">저장 · A5 출력</span></div>
+          </div>
+          <div class="col" style="flex:.7;align-items:center">
+            <div class="a5">
+              <div class="no">No. S-2610-031</div>
+              <div class="img" style="height:110px">사진</div>
+              <div class="name">오후의 바다</div>
+              <div class="muted" style="font-size:10px">박○○ · 2026.10.31</div>
+              <div class="line">세 번째 담갔을 때 비로소 바다가 됐다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>A5 1차 시안을 받으면 항목 순서를 카드에 맞춰요.</p>
+  </article>
+
+  <!-- W4 -->
+  <article class="wfcard" id="w4">
+    <div class="wfhead"><span class="n">W4</span><h3>탄생 기록 목록</h3></div>
+    <p class="wfdesc">쌓인 기록과 게시 상태를 봐요. 기본은 탄생일 2주 뒤 자동 게시, 게시되면 "장면이 걸렸어요"가 나가요. 처음엔 몇 장 없어도 괜찮게 카드로 보여줘요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav">예약</div><div class="wf-nav on">탄생 기록</div><div class="wf-nav">안내 발송</div><div class="wf-nav">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">탄생 기록</span><span class="seg"><span class="on">전체</span><span>게시 대기</span><span>게시됨</span></span><span class="btn pri">+ 새 기록</span></div>
+        <div class="g3" style="grid-template-columns:repeat(4,1fr)">
+          <div class="col" style="gap:4px"><div class="img" style="height:100px"></div><div class="mono muted" style="font-size:10px">S-2610-031</div><b>오후의 바다</b><span><span class="st wait">11/14 게시</span></span></div>
+          <div class="col" style="gap:4px"><div class="img" style="height:100px"></div><div class="mono muted" style="font-size:10px">S-2610-027</div><b>늦은 귤밭</b><span><span class="st wait">11/09 게시</span></span></div>
+          <div class="col" style="gap:4px"><div class="img" style="height:100px"></div><div class="mono muted" style="font-size:10px">S-2610-024</div><b>아침의 숲</b><span><span class="st ok">게시됨</span></span></div>
+          <div class="empty" style="display:grid;place-items:center;height:100px">+ 새 기록</div>
+        </div>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>2주 간격이 고정인지. 택배 수령이면 받은 뒤로 미룰지.</p>
+  </article>
+
+  <!-- W5 -->
+  <article class="wfcard" id="w5">
+    <div class="wfhead"><span class="n">W5</span><h3>안내 발송</h3></div>
+    <p class="wfdesc">자동으로 나가는 카카오 메시지 세 가지예요. 대표님은 문구만 다듬고 켜고 끄면 돼요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav">예약</div><div class="wf-nav">탄생 기록</div><div class="wf-nav on">안내 발송</div><div class="wf-nav">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">안내 발송</span><span class="seg"><span class="on">메시지</span><span>보낸 내역</span></span></div>
+        <div class="g3">
+          <div class="box"><h5>예약 확정 · 즉시</h5><div class="bubble">○○님, 11월 1일 오전 식물 리추얼 예약이 확정됐어요.</div><div style="margin-top:10px;text-align:right"><span class="toggle"></span></div></div>
+          <div class="box"><h5>리마인드 · 하루 전</h5><div class="bubble">내일 10시에 뵈어요. 찻자리도 함께 하시면 15,000원이에요.</div><div style="margin-top:10px;text-align:right"><span class="toggle"></span></div></div>
+          <div class="box"><h5>장면이 걸렸어요 · 게시 때</h5><div class="bubble">○○님의 장면 「오후의 바다」가 SCENES에 걸렸어요.</div><div style="margin-top:10px;text-align:right"><span class="toggle"></span></div></div>
+        </div>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>카카오 비즈니스 채널 개설과 사업자 인증 일정. 이게 있어야 발송이 시작돼요.</p>
+  </article>
+
+  <!-- W6 -->
+  <article class="wfcard" id="w6">
+    <div class="wfhead"><span class="n">W6</span><h3>문의함</h3></div>
+    <p class="wfdesc">외국인 손님이 영문 폼으로 남긴 문의가 들어와요. 날짜를 정해 확정하면 예약 보드에 한 줄 생기고 안내 메일이 나가요.</p>
+    <div class="scroller"><div class="wf">
+      <aside class="wf-side">
+        <div class="wf-logo">SCENE OF JEJU</div>
+        <div class="wf-nav">예약</div><div class="wf-nav">탄생 기록</div><div class="wf-nav">안내 발송</div><div class="wf-nav on">문의함</div>
+        <div class="wf-sep"></div><div class="wf-nav off">재료·도구</div><div class="wf-nav off">지표</div>
+      </aside>
+      <div class="wf-main">
+        <div class="wf-bar"><span class="wf-title">문의함</span></div>
+        <div class="row">
+          <div class="col" style="flex:.8">
+            <div class="box" style="border-color:var(--jjok);background:var(--jjok-soft)"><b>Kenji S.</b><div class="muted">Plant · 2명 · Nov 2</div></div>
+            <div class="box"><b>Lucie M.</b><div class="muted">Blue · 1명 · Nov 5–7</div></div>
+          </div>
+          <div class="col" style="flex:1.4">
+            <div class="box"><div class="muted" style="margin-bottom:4px">kenji.s@****.jp</div>"We'd love to try the plant ritual on Nov 2 afternoon."</div>
+            <div class="g2">
+              <div><div class="flabel">날짜·시간</div><div class="field mono">11/02 14:00</div></div>
+              <div><div class="flabel">리추얼</div><div class="field">식물</div></div>
+            </div>
+            <div style="text-align:right"><span class="btn pri">확정 · 메일 보내기</span></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <p class="ask"><b>확인</b>폼은 구글 폼과 Tally 중 무엇으로 할지, 결제는 어떻게 받으실지.</p>
+  </article>
+</section>
+
+<section class="part" id="data">
+  <h2><span class="k">3</span>데이터 구조 초안</h2>
+  <p class="sub">다섯 덩어리로 시작해요. 가운데는 탄생 기록이에요. 필드는 실제로 쌓이는 걸 보고 늘려요.</p>
+  <div class="erd">
+<pre class="mermaid">
+erDiagram
+  CUSTOMER ||--o{ RESERVATION : "예약"
+  INQUIRY |o--o| RESERVATION : "확정되면"
+  RESERVATION ||--o{ BIRTH_RECORD : "낳는다"
+  RESERVATION ||--o{ MESSAGE : "안내"
+  BIRTH_RECORD ||--o| MESSAGE : "장면이 걸렸어요"
+</pre>
+  </div>
+  <div class="ents">
+    <div class="ent"><div class="h"><b>고객</b><code>customer</code></div><div class="fields"><span>이름</span><span class="key">전화번호</span><span>이메일</span><span>카카오 채널 추가</span></div></div>
+    <div class="ent"><div class="h"><b>예약</b><code>reservation</code></div><div class="fields"><span>날짜·시간</span><span>리추얼</span><span>인원</span><span>상태</span><span>출처</span><span class="key">네이버 예약번호</span></div><p>출처: 네이버 · 문의폼 · 직접</p></div>
+    <div class="ent"><div class="h"><b>탄생 기록</b><code>birth_record</code></div><div class="fields"><span class="key">번호</span><span>이름</span><span>지은 이</span><span>탄생일</span><span>리추얼</span><span>아이템·소재</span><span>그날의 자연</span><span>그날의 한 줄</span><span>사진</span><span>게시일</span></div><p>A5 카드, SCENES, ARCHIVE가 모두 이 한 줄에서 나와요.</p></div>
+    <div class="ent"><div class="h"><b>발송</b><code>message</code></div><div class="fields"><span>종류</span><span>받는 이</span><span>보낸 시각</span><span>결과</span></div></div>
+    <div class="ent"><div class="h"><b>문의</b><code>inquiry</code></div><div class="fields"><span>이름</span><span>이메일</span><span>원하는 날짜</span><span>인원</span><span>내용</span><span>상태</span></div></div>
+  </div>
+  <p class="note">번호 규칙은 <code>S-YYMM-NNN</code>이에요. 탄생일 기준 연월, 그 달 안에서 001부터 매겨요.</p>
+</section>
+
+<section class="part" id="ask">
+  <h2><span class="k">4</span>오늘 확인할 것</h2>
+  <ol class="qs">
+    <li><div><b>11월 범위가 이 세 가지로 괜찮은지</b><p>예약, 카카오 안내, 탄생 기록. 대표님 리스트와 맞춰봐요.</p></div></li>
+    <li><div><b>네이버 예약 엑셀 샘플 1부</b><p>엑셀 올리기를 기본으로 두고, 열 구성을 보고 예약 보드를 맞춰요.</p></div></li>
+    <li><div><b>카카오 채널 개설 일정</b><p>발송 세 가지가 시작되는 날을 정해요.</p></div></li>
+    <li><div><b>A5 카드 시안</b><p>탄생 기록 입력 순서를 카드에 맞춰요.</p></div></li>
+  </ol>
+  <footer>테이크어냅 · 씬오브제주 어드민 P0 초안 · 2026.10.29. 화면 속 이름과 숫자는 예시예요.</footer>
+</section>
+</div>

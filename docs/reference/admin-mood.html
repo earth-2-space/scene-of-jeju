@@ -1,0 +1,440 @@
+<title>씬오브제주 어드민 무드</title>
+<style>
+@font-face{font-family:"Pretendard Variable";src:url("fonts/PretendardVariable.woff2") format("woff2-variations");font-weight:45 920;font-display:swap}
+/* 한 가지 세계로 고정한 디자인: 생지 종이 위의 기록. 다크 테마는 일부러 두지 않아요. */
+:root{
+  color-scheme:light;
+  --paper:#EAE6DE;      /* 생지 */
+  --sheet:#F3F0EA;      /* 카드 종이 */
+  --sheet-2:#E2DDD3;
+  --ink:#262521;        /* 먹 */
+  --ink-2:#5B5850;
+  --ink-3:#8F8B82;
+  --line:#CFC8BB;
+  --line-2:#DDD7CC;
+  --jjok:#2F4A73;       /* 쪽빛, 포인트 하나 */
+  --jjok-soft:#D9DEE6;
+  --moss:#767A5F;       /* 식물 리추얼 */
+  --moss-soft:#DFE0D3;
+  --ochre:#A8844E;
+  --serif-en:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --serif-ko:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.14  0 0 0 0 0.12  0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+*{box-sizing:border-box}
+body{background:var(--paper);background-image:var(--grain);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:28px;padding-block:0 96px}
+@media (max-width:600px){.wrap{padding-inline:16px}}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.br{color:var(--ink-3);letter-spacing:.06em;font-size:12px}
+
+/* ===== page intro ===== */
+.intro{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:end;padding-block:64px 40px;border-bottom:1px solid var(--line)}
+@media (max-width:860px){.intro{grid-template-columns:1fr;gap:28px}}
+.logo{font-family:var(--serif-en);font-size:clamp(56px,9vw,104px);line-height:.86;letter-spacing:-.01em;margin:0;font-weight:400}
+.logo i{font-style:normal;font-size:.55em;margin-right:.08em;vertical-align:.06em}
+.intro .sub{font-family:var(--serif-ko);font-size:15px;color:var(--ink-2);margin:18px 0 0}
+.intro .meta{font-size:14px;color:var(--ink-2);max-width:46ch}
+.intro .meta p{margin:0 0 14px}
+.form-line{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:6px 10px;font-family:var(--serif-en);font-size:15px;color:var(--ink-3);margin-bottom:22px}
+.form-line span.l{border-bottom:1px solid var(--line);min-width:60px;color:var(--ink);font-family:var(--mono);font-size:12px;padding-bottom:2px}
+
+.tokens{display:grid;grid-template-columns:repeat(5,1fr) 1.6fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:32px}
+@media (max-width:860px){.tokens{grid-template-columns:repeat(3,1fr)}}
+.tok{background:var(--sheet);padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px;font-size:12px}
+.tok .sw{height:46px;border:1px solid rgba(0,0,0,.06)}
+.tok b{font-weight:600}
+.tok span{color:var(--ink-3);font-family:var(--mono);font-size:11px}
+.tok.type{justify-content:space-between}
+.tok.type .a{font-family:var(--serif-en);font-size:28px;line-height:1}
+.tok.type .b{font-family:var(--serif-ko);font-size:15px}
+.tok.type .c{font-family:var(--sans);font-size:13px}
+@media (max-width:860px){.tok.type{grid-column:1/-1}}
+
+h2.sec{display:flex;align-items:baseline;gap:14px;margin:72px 0 6px;font-weight:400}
+h2.sec .en{font-family:var(--serif-en);font-size:34px;line-height:1}
+h2.sec .ko{font-size:15px;font-weight:600}
+p.cap{color:var(--ink-2);font-size:14px;margin:0 0 20px;max-width:66ch}
+
+/* ===== app frame ===== */
+.scroller{overflow-x:auto;padding-bottom:6px}
+.app{width:1140px;background:var(--paper);background-image:var(--grain);border:1px solid var(--line);display:grid;grid-template-columns:208px 1fr;min-height:640px;box-shadow:0 30px 60px -40px rgba(38,37,33,.35);font-size:13px}
+.side{border-right:1px solid var(--line);padding:26px 22px;display:flex;flex-direction:column;gap:28px}
+.side .mark{font-family:var(--serif-en);font-size:30px;line-height:.9}
+.side .mark i{font-style:normal;font-size:.55em}
+.side .mark small{display:block;font-family:var(--sans);font-size:10px;letter-spacing:.18em;color:var(--ink-3);margin-top:10px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;color:var(--ink-2);text-decoration:none;border-bottom:1px solid transparent;font-size:13.5px}
+.nav a .n{font-family:var(--serif-en);font-size:15px;color:var(--ink-3)}
+.nav a.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.nav a.on .n{color:var(--ink)}
+.nav a.off{color:var(--ink-3);opacity:.6}
+.nav .lbl{font-size:10.5px;letter-spacing:.14em;color:var(--ink-3);margin:14px 0 4px}
+.side .foot{margin-top:auto;font-size:11px;color:var(--ink-3);line-height:1.6}
+.side .foot .w{font-family:var(--serif-en);font-size:22px;color:var(--ink);display:block;line-height:1.1}
+
+.main{padding:30px 36px 36px;display:flex;flex-direction:column;gap:26px;min-width:0}
+.topline{display:flex;align-items:flex-end;gap:20px;border-bottom:1px solid var(--ink);padding-bottom:16px}
+.date-big{font-family:var(--serif-en);font-size:58px;line-height:.85}
+.date-big small{font-size:22px;margin-left:10px;color:var(--ink-2)}
+.topline .ko{font-family:var(--serif-ko);font-size:14px;color:var(--ink-2);padding-bottom:4px}
+.topline .act{margin-left:auto;display:flex;gap:8px;padding-bottom:2px}
+.btn{font-family:var(--sans);font-size:12.5px;padding:8px 14px;border:1px solid var(--ink);background:transparent;color:var(--ink);border-radius:999px;white-space:nowrap;cursor:pointer}
+.btn.fill{background:var(--ink);color:var(--sheet)}
+.btn.jjok{background:var(--jjok);border-color:var(--jjok);color:var(--sheet)}
+.btn:focus-visible{outline:2px solid var(--jjok);outline-offset:2px}
+
+.cols{display:grid;grid-template-columns:1fr 290px;gap:32px;align-items:start}
+
+/* reservation rows as record slips */
+.day-h{display:flex;align-items:baseline;gap:10px;margin:0 0 8px}
+.day-h .en{font-family:var(--serif-en);font-size:20px}
+.day-h .br{margin-left:auto}
+.slip{display:grid;grid-template-columns:64px 1fr auto auto;gap:18px;align-items:center;padding:16px 4px;border-bottom:1px solid var(--line)}
+.slip:first-of-type{border-top:1px solid var(--line)}
+.slip .t{font-family:var(--serif-en);font-size:26px;line-height:1}
+.slip .who{display:flex;flex-direction:column;gap:2px}
+.slip .who b{font-size:15px;font-weight:600}
+.slip .who span{font-size:12.5px;color:var(--ink-2)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2);background:var(--sheet)}
+.tag .d{width:7px;height:7px;border-radius:50%}
+.tag.blue .d{background:var(--jjok)}
+.tag.plant .d{background:var(--moss)}
+.state{font-size:12px;color:var(--ink-2);display:flex;gap:6px;align-items:center;min-width:92px;justify-content:flex-end}
+.state.done{color:var(--ink-3)}
+.state.now{color:var(--jjok);font-weight:600}
+.msg{display:inline-flex;gap:4px}
+.msg i{width:6px;height:6px;border-radius:50%;border:1px solid var(--ink-3)}
+.msg i.s{background:var(--ink);border-color:var(--ink)}
+.src{font-family:var(--mono);font-size:10px;color:var(--ink-3);margin-left:6px;letter-spacing:.04em}
+
+.aside{display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--sheet);border:1px solid var(--line-2);padding:18px 18px 16px}
+.panel h4{margin:0 0 12px;font-weight:400;display:flex;justify-content:space-between;align-items:baseline}
+.panel h4 .en{font-family:var(--serif-en);font-size:19px}
+.mini{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:9px 0;border-top:1px solid var(--line-2)}
+.mini:first-of-type{border-top:0;padding-top:0}
+.mini b{font-family:var(--serif-ko);font-weight:700;font-size:14px;display:block}
+.mini span{font-size:11.5px;color:var(--ink-3)}
+.weather{display:flex;align-items:flex-end;justify-content:space-between}
+.weather .v{font-family:var(--serif-en);font-size:44px;line-height:.9}
+.weather .k{font-size:12px;color:var(--ink-2);text-align:right}
+.quote{font-family:var(--serif-ko);font-size:14px;line-height:1.7;color:var(--ink-2);border-left:1px solid var(--ink);padding-left:12px;margin:0}
+
+/* dyed swatches stand in for photos */
+.dye{position:relative;overflow:hidden;background:var(--sheet-2)}
+.dye::after{content:"";position:absolute;inset:0;background-image:var(--grain);mix-blend-mode:multiply;opacity:.9}
+.dye.indigo{background:radial-gradient(120% 80% at 30% 20%,#5D7298 0%,#34507C 38%,#1F3354 75%,#16243C 100%)}
+.dye.indigo2{background:linear-gradient(170deg,#9AABC5 0%,#4E6790 30%,#2B4469 60%,#9AABC5 61%,#3B577F 64%,#1D2E4B 100%)}
+.dye.sky{background:radial-gradient(90% 70% at 70% 30%,#C9D3E0 0%,#8DA1BE 45%,#5B7398 100%)}
+.dye.moss{background:radial-gradient(100% 90% at 40% 60%,#B7B79A 0%,#8A8D6C 45%,#62664A 100%)}
+.dye.flower{background:radial-gradient(60% 50% at 30% 35%,#D8B98C 0%,transparent 70%),radial-gradient(70% 60% at 75% 70%,#B9A27A 0%,transparent 70%),#E6DCC8}
+.dye.green{background:radial-gradient(80% 70% at 60% 40%,#C8CBB0 0%,#9EA283 50%,#7B8063 100%)}
+.dye.ink{background:linear-gradient(160deg,#6B6B66 0%,#3A3935 60%,#262521 100%)}
+
+/* ===== record form + A5 ===== */
+.recgrid{display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:start}
+.fld{display:flex;flex-direction:column;gap:6px}
+.fld label{font-size:11px;letter-spacing:.1em;color:var(--ink-3)}
+.fld label em{font-style:normal;color:var(--jjok);margin-left:6px;letter-spacing:0}
+.fld .in{border:0;border-bottom:1px solid var(--ink-2);background:transparent;padding:6px 0 8px;font-size:16px;color:var(--ink);font-family:var(--sans)}
+.fld .in.auto{color:var(--ink-2);border-bottom-style:dotted;font-family:var(--mono);font-size:14px}
+.fld .in.title{font-family:var(--serif-ko);font-size:26px;font-weight:700;padding-bottom:10px}
+.fld .in.line{font-family:var(--serif-ko);font-size:17px;line-height:1.7}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 26px}
+.fgrid .span2{grid-column:span 2}
+.fgrid .span3{grid-column:1/-1}
+.chips{display:flex;gap:8px;flex-wrap:wrap;padding-top:4px}
+.chips span{font-size:12.5px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;color:var(--ink-2)}
+.chips span.on{border-color:var(--ink);color:var(--ink);background:var(--sheet)}
+.photos{display:flex;gap:10px}
+.photos .dye{width:84px;height:84px}
+.photos .add{width:84px;height:84px;border:1px dashed var(--ink-3);display:grid;place-items:center;font-size:11px;color:var(--ink-3)}
+.photos .cover{outline:1px solid var(--ink);outline-offset:3px}
+.rec-foot{display:flex;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:18px}
+.rec-foot .note{font-size:12.5px;color:var(--ink-2);margin-right:auto}
+.rec-foot .note b{color:var(--jjok);font-weight:600}
+
+.a5{background:var(--sheet);aspect-ratio:148/210;width:100%;padding:22px 24px 20px;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--line),0 24px 40px -28px rgba(38,37,33,.45);position:relative}
+.a5::before{content:"";position:absolute;inset:0;background-image:var(--grain);opacity:.5;pointer-events:none}
+.a5 .hdr{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:8px;align-items:end;font-family:var(--serif-en);font-size:13px;color:var(--ink-3);border-bottom:1px solid var(--line);padding-bottom:6px}
+.a5 .hdr span.v{font-family:var(--mono);font-size:10.5px;color:var(--ink);border-bottom:0}
+.a5 .ph{height:46%;margin:16px 0 14px}
+.a5 .ttl{font-family:var(--serif-ko);font-size:24px;font-weight:700;line-height:1.2;margin:0}
+.a5 .ttl-en{font-family:var(--serif-en);font-size:14px;color:var(--ink-3);margin:2px 0 12px}
+.a5 dl{display:grid;grid-template-columns:62px 1fr;gap:4px 10px;margin:0;font-size:11px}
+.a5 dt{color:var(--ink-3)}
+.a5 dd{margin:0;color:var(--ink)}
+.a5 .one{margin-top:auto;border-top:1px solid var(--line);padding-top:10px;font-family:var(--serif-ko);font-size:12.5px;line-height:1.6}
+.a5 .sig{display:flex;justify-content:space-between;align-items:baseline;font-size:9.5px;color:var(--ink-3);margin-top:10px;letter-spacing:.08em}
+.a5 .sig .m{font-family:var(--serif-en);font-size:14px;letter-spacing:0;color:var(--ink)}
+.a5-cap{font-size:12px;color:var(--ink-3);margin-top:12px;text-align:center}
+
+/* ===== gallery ===== */
+.filters{display:flex;gap:18px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;color:var(--ink-3)}
+.filters b{color:var(--ink);font-weight:600;border-bottom:1px solid var(--ink);padding-bottom:10px;margin-bottom:-11px}
+.filters .r{margin-left:auto;font-family:var(--serif-en);font-size:15px;color:var(--ink-2)}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:28px 22px}
+.card{display:flex;flex-direction:column;gap:8px}
+.card .dye{aspect-ratio:4/5}
+.card .no{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);border-bottom:1px solid var(--line);padding-bottom:5px}
+.card b{font-family:var(--serif-ko);font-size:16px;font-weight:700}
+.card .by{font-size:11.5px;color:var(--ink-2);display:flex;justify-content:space-between;align-items:center}
+.pill{font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink-2)}
+.pill.wait{border-color:var(--jjok);color:var(--jjok)}
+.pill.live{background:var(--ink);border-color:var(--ink);color:var(--sheet)}
+.card.empty .dye{background:transparent;border:1px dashed var(--ink-3);display:grid;place-items:center}
+.card.empty .dye::after{display:none}
+.card.empty .dye span{font-family:var(--serif-en);font-size:22px;color:var(--ink-3)}
+
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:22px}
+@media (max-width:860px){.notes{grid-template-columns:1fr}}
+.notes div{border-top:1px solid var(--ink);padding-top:12px;font-size:14px;color:var(--ink-2)}
+.notes b{display:block;color:var(--ink);font-weight:600;margin-bottom:4px}
+footer{margin-top:72px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer .en{font-family:var(--serif-en);font-size:16px;color:var(--ink-2)}
+
+/* Pretendard 한 가지로 통일. 큰 글자는 가늘게, 숫자는 고정폭 */
+body{font-feature-settings:"tnum" 1,"ss06" 1;letter-spacing:-.005em}
+.logo{font-weight:250;letter-spacing:-.035em;line-height:.9}
+.logo i{font-weight:300}
+.side .mark{font-weight:300;letter-spacing:-.02em;font-size:26px}
+.date-big{font-weight:250;letter-spacing:-.035em}
+.date-big small{font-weight:400;font-size:18px;letter-spacing:0}
+.slip .t{font-weight:300;font-size:24px;letter-spacing:-.02em}
+.weather .v{font-weight:250;letter-spacing:-.03em}
+.side .foot .w{font-weight:400;font-size:19px}
+h2.sec .en{font-weight:300;font-size:30px;letter-spacing:-.025em}
+.panel h4 .en,.day-h .en{font-weight:500;font-size:16px;letter-spacing:-.01em}
+.nav a .n{font-size:13px}
+.mini b,.card b{font-weight:600}
+.fld .in.title{font-weight:600;letter-spacing:-.02em}
+.fld .in.line,.quote,.a5 .one{font-weight:400}
+.a5 .ttl{font-weight:650;letter-spacing:-.02em}
+.a5 .ttl-en,.a5 .hdr{font-size:12px;letter-spacing:.02em}
+.tok.type .a{font-weight:300;font-size:24px;letter-spacing:-.02em}
+.form-line{font-size:13px}
+footer .en{font-size:14px}
+.card.empty .dye span{font-weight:300;font-size:18px}
+.src{font-size:10px;font-weight:500}
+</style>
+
+<div class="wrap">
+
+<section class="intro">
+  <div>
+    <h1 class="logo">SCENE<br><i>of</i>JEJU</h1>
+    <p class="sub">어드민 무드 · 매일 여는 화면도 기록처럼</p>
+  </div>
+  <div class="meta">
+    <div class="form-line"><span>No.</span><span class="l">P0-03</span><span>Date.</span><span class="l">2026.10.29</span></div>
+    <p>보내주신 스튜디오·워크북 자료에서 결을 가져왔어요. 생지 같은 종이 바탕, 상단의 No.와 Date. 기입란, 얇은 선, 넓은 여백이에요.</p>
+    <p>서체는 잘 읽히는 게 먼저라 Pretendard 하나로 통일했어요. 레퍼런스는 무드만 참고했어요. 색은 먹 하나에 쪽빛 포인트 하나예요. 아래 세 화면은 무드를 보여주는 예시라 이름과 숫자는 모두 지어낸 거예요.</p>
+  </div>
+</section>
+
+<div class="tokens" aria-label="색과 서체">
+  <div class="tok"><div class="sw" style="background:#EAE6DE"></div><b>생지</b><span>#EAE6DE 바탕</span></div>
+  <div class="tok"><div class="sw" style="background:#F3F0EA"></div><b>종이</b><span>#F3F0EA 카드</span></div>
+  <div class="tok"><div class="sw" style="background:#262521"></div><b>먹</b><span>#262521 글자·선</span></div>
+  <div class="tok"><div class="sw" style="background:#2F4A73"></div><b>쪽빛</b><span>#2F4A73 포인트·블루</span></div>
+  <div class="tok"><div class="sw" style="background:#767A5F"></div><b>이끼</b><span>#767A5F 식물</span></div>
+  <div class="tok type">
+    <div class="a">Oct. 31 — 14:00</div>
+    <div class="b">오후의 바다 · 그날의 한 줄</div>
+    <div class="c">본문과 표 · <span class="mono">S-2610-031</span></div>
+  </div>
+</div>
+
+<!-- ================= 1 ================= -->
+<h2 class="sec"><span class="en">Today</span><span class="ko">예약 보드</span></h2>
+<p class="cap">아침에 여는 첫 화면이에요. 오늘 날짜와 날씨를 크게 두고, 예약은 기록지 한 장처럼 한 줄씩 놓아요. 리추얼 색은 점 하나로만 구분해요.</p>
+<div class="scroller">
+<div class="app">
+  <aside class="side">
+    <div class="mark">SCENE<br><i>of</i>JEJU<small>ADMIN</small></div>
+    <nav class="nav" aria-label="어드민 메뉴">
+      <a href="#" class="on">예약 <span class="n">5</span></a>
+      <a href="#">탄생 기록 <span class="n">31</span></a>
+      <a href="#">안내 발송 <span class="n"></span></a>
+      <a href="#">문의함 <span class="n">2</span></a>
+      <div class="lbl">준비 중</div>
+      <a href="#" class="off">재료·도구</a>
+      <a href="#" class="off">지표</a>
+    </nav>
+    <div class="foot"><span class="w">Fri. 31</span>제주 한림 · 맑음 · 19℃<br>오늘 3팀, 내일 2팀</div>
+  </aside>
+  <div class="main">
+    <div class="topline">
+      <div class="date-big">Oct. 31<small>Friday</small></div>
+      <div class="ko">10월 31일 금요일 · 오늘의 리추얼 세 번</div>
+      <div class="act"><button class="btn" type="button">네이버 엑셀 올리기</button><button class="btn fill" type="button">예약 추가</button></div>
+    </div>
+    <div class="cols">
+      <div>
+        <div class="day-h"><span class="en">Today</span><span class="br">[ 오늘 ]</span></div>
+        <div class="slip">
+          <span class="t">10:00</span>
+          <span class="who"><b>김○○ 외 1명</b><span>식물 리추얼 · 플라워 · 찻자리<span class="src">NAVER</span></span></span>
+          <span class="tag plant"><span class="d"></span>식물</span>
+          <span class="state done">방문 <span class="msg"><i class="s"></i><i class="s"></i><i></i></span></span>
+        </div>
+        <div class="slip">
+          <span class="t">14:00</span>
+          <span class="who"><b>박○○</b><span>블루 리추얼 · 결무늬 · 택배 수령<span class="src">NAVER</span></span></span>
+          <span class="tag blue"><span class="d"></span>블루</span>
+          <span class="state now">곧 시작 <span class="msg"><i class="s"></i><i class="s"></i><i></i></span></span>
+        </div>
+        <div class="slip">
+          <span class="t">16:00</span>
+          <span class="who"><b>Emma L. 외 1명</b><span>블루 리추얼 · 푸른풍경<span class="src">FORM · EN</span></span></span>
+          <span class="tag blue"><span class="d"></span>블루</span>
+          <span class="state">확정 <span class="msg"><i class="s"></i><i></i><i></i></span></span>
+        </div>
+        <div class="day-h" style="margin-top:28px"><span class="en">Tomorrow</span><span class="br">[ 11.01 토 · 리마인드 18:00 ]</span></div>
+        <div class="slip">
+          <span class="t">10:00</span>
+          <span class="who"><b>이○○ 외 2명</b><span>식물 리추얼 · 그린 · 찻자리<span class="src">NAVER</span></span></span>
+          <span class="tag plant"><span class="d"></span>식물</span>
+          <span class="state">확정 <span class="msg"><i class="s"></i><i></i><i></i></span></span>
+        </div>
+        <div class="slip">
+          <span class="t">13:00</span>
+          <span class="who"><b>최○○</b><span>블루 리추얼 · 결무늬<span class="src">DIRECT</span></span></span>
+          <span class="tag blue"><span class="d"></span>블루</span>
+          <span class="state">대기</span>
+        </div>
+      </div>
+      <div class="aside">
+        <div class="panel">
+          <h4><span class="en">Nature of the day</span><span class="br">[ 그날의 자연 ]</span></h4>
+          <div class="weather"><span class="v">19.4°</span><span class="k">맑음 · 북서풍<br>습도 58%</span></div>
+        </div>
+        <div class="panel">
+          <h4><span class="en">To be recorded</span><span class="br">2</span></h4>
+          <div class="mini"><div class="dye moss" style="height:44px"></div><div><b>김○○ 님의 작품</b><span>10:00 방문 · 기록 전</span></div></div>
+          <div class="mini"><div class="dye flower" style="height:44px"></div><div><b>10/29 정○○ 님</b><span>사진만 올라옴</span></div></div>
+        </div>
+        <p class="quote">어제 남긴 한 줄<br>“귤 껍질을 넣었더니 노을이 남았다.”</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================= 2 ================= -->
+<h2 class="sec"><span class="en">Birth record</span><span class="ko">탄생 기록 입력</span></h2>
+<p class="cap">이 어드민의 중심 화면이에요. 왼쪽에 적는 대로 오른쪽 A5 카드가 바뀌어요. 이름과 한 줄은 크게 적혀서, 입력하는 순간부터 카드의 모습이 보여요.</p>
+<div class="scroller">
+<div class="app">
+  <aside class="side">
+    <div class="mark">SCENE<br><i>of</i>JEJU<small>ADMIN</small></div>
+    <nav class="nav" aria-label="어드민 메뉴">
+      <a href="#">예약 <span class="n">5</span></a>
+      <a href="#" class="on">탄생 기록 <span class="n">31</span></a>
+      <a href="#">안내 발송 <span class="n"></span></a>
+      <a href="#">문의함 <span class="n">2</span></a>
+      <div class="lbl">준비 중</div>
+      <a href="#" class="off">재료·도구</a>
+      <a href="#" class="off">지표</a>
+    </nav>
+    <div class="foot"><span class="w">No. 031</span>이번 달 서른한 번째 탄생</div>
+  </aside>
+  <div class="main">
+    <div class="topline">
+      <div class="date-big" style="font-size:44px">New record<small>새 탄생 기록</small></div>
+      <div class="ko">연결된 예약 · 박○○ · 10.31 14:00</div>
+    </div>
+    <div class="recgrid">
+      <div style="display:flex;flex-direction:column;gap:26px">
+        <div class="fgrid">
+          <div class="fld"><label>No.<em>자동</em></label><div class="in auto">S-2610-031</div></div>
+          <div class="fld"><label>탄생일<em>자동</em></label><div class="in auto">2026.10.31</div></div>
+          <div class="fld"><label>그날의 자연<em>자동</em></label><div class="in auto">맑음 · 19.4℃</div></div>
+          <div class="fld span2"><label>이름</label><div class="in title">오후의 바다</div></div>
+          <div class="fld"><label>지은 이</label><div class="in">박○○</div></div>
+          <div class="fld span3"><label>리추얼</label><div class="chips"><span>식물 · 플라워</span><span>식물 · 그린</span><span>블루 · 푸른풍경</span><span class="on">블루 · 결무늬</span></div></div>
+          <div class="fld"><label>아이템</label><div class="in">손수건</div></div>
+          <div class="fld"><label>소재</label><div class="in">면 거즈</div></div>
+          <div class="fld"><label>물들인 횟수</label><div class="in mono">3</div></div>
+          <div class="fld span3"><label>그날의 한 줄</label><div class="in line">세 번째 담갔을 때 비로소 바다가 됐다.</div></div>
+          <div class="fld span3"><label>사진</label>
+            <div class="photos"><div class="dye indigo2 cover"></div><div class="dye indigo"></div><div class="dye sky"></div><div class="add">+ 추가</div></div>
+          </div>
+        </div>
+        <div class="rec-foot">
+          <span class="note">게시 동의 받음 · 저장하면 <b>11월 14일</b> SCENES에 걸려요</span>
+          <button class="btn" type="button">임시 저장</button>
+          <button class="btn jjok" type="button">저장하고 A5 출력</button>
+        </div>
+      </div>
+      <div>
+        <div class="a5">
+          <div class="hdr"><span>No.</span><span class="v">S-2610-031</span><span>Date.</span><span class="v">2026.10.31</span></div>
+          <div class="dye indigo2 ph"></div>
+          <p class="ttl">오후의 바다</p>
+          <p class="ttl-en">An afternoon sea</p>
+          <dl>
+            <dt>지은 이</dt><dd>박○○</dd>
+            <dt>리추얼</dt><dd>블루 · 결무늬</dd>
+            <dt>아이템</dt><dd>손수건 · 면 거즈</dd>
+            <dt>그날의 자연</dt><dd>맑음 19.4℃ · 쪽 세 번</dd>
+          </dl>
+          <p class="one">세 번째 담갔을 때 비로소 바다가 됐다.</p>
+          <div class="sig"><span>BORN AT SCENE OF JEJU</span><span class="m">SoJ</span></div>
+        </div>
+        <div class="a5-cap">A5 미리보기 · 출력하면 이 모습 그대로</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ================= 3 ================= -->
+<h2 class="sec"><span class="en">Scenes</span><span class="ko">탄생 기록 목록</span></h2>
+<p class="cap">쌓인 기록을 SCENES와 같은 카드로 봐요. 게시 대기는 쪽빛 테두리, 게시된 건 먹으로 채워요. 기록이 몇 장 없을 때도 빈 칸이 다음 기록 자리처럼 보이게 했어요.</p>
+<div class="scroller">
+<div class="app" style="min-height:0">
+  <aside class="side">
+    <div class="mark">SCENE<br><i>of</i>JEJU<small>ADMIN</small></div>
+    <nav class="nav" aria-label="어드민 메뉴">
+      <a href="#">예약 <span class="n">5</span></a>
+      <a href="#" class="on">탄생 기록 <span class="n">31</span></a>
+      <a href="#">안내 발송 <span class="n"></span></a>
+      <a href="#">문의함 <span class="n">2</span></a>
+      <div class="lbl">준비 중</div>
+      <a href="#" class="off">재료·도구</a>
+      <a href="#" class="off">지표</a>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="topline">
+      <div class="date-big" style="font-size:48px">October<small>2026</small></div>
+      <div class="ko">이번 달 서른한 번의 탄생 · 게시 대기 넷</div>
+      <div class="act"><button class="btn fill" type="button">새 기록</button></div>
+    </div>
+    <div class="filters"><b>전체 31</b><span>게시 대기 4</span><span>게시됨 24</span><span>비공개 3</span><span class="r">Plant · Blue</span></div>
+    <div class="gal">
+      <div class="card"><div class="dye indigo2"></div><div class="no"><span>S-2610-031</span><span>10.31</span></div><b>오후의 바다</b><div class="by"><span>박○○ · 블루</span><span class="pill wait">11.14 게시</span></div></div>
+      <div class="card"><div class="dye flower"></div><div class="no"><span>S-2610-029</span><span>10.29</span></div><b>노을이 남은 자리</b><div class="by"><span>정○○ · 식물</span><span class="pill wait">11.12 게시</span></div></div>
+      <div class="card"><div class="dye green"></div><div class="no"><span>S-2610-027</span><span>10.26</span></div><b>늦은 귤밭</b><div class="by"><span>한○○ · 식물</span><span class="pill wait">11.09 게시</span></div></div>
+      <div class="card"><div class="dye sky"></div><div class="no"><span>S-2610-024</span><span>10.24</span></div><b>아침의 숲</b><div class="by"><span>오○○ · 블루</span><span class="pill wait">11.07 게시</span></div></div>
+      <div class="card"><div class="dye moss"></div><div class="no"><span>S-2610-019</span><span>10.17</span></div><b>바람이 머문 곳</b><div class="by"><span>윤○○ · 식물</span><span class="pill live">게시됨</span></div></div>
+      <div class="card"><div class="dye indigo"></div><div class="no"><span>S-2610-015</span><span>10.12</span></div><b>깊은 물의 오후</b><div class="by"><span>서○○ · 블루</span><span class="pill live">게시됨</span></div></div>
+      <div class="card"><div class="dye ink"></div><div class="no"><span>S-2610-011</span><span>10.09</span></div><b>먹구름 지나고</b><div class="by"><span>강○○ · 블루</span><span class="pill">비공개</span></div></div>
+      <div class="card empty"><div class="dye"><span>No. 032</span></div><div class="no"><span>S-2610-032</span><span>—</span></div><b style="color:var(--ink-3)">다음 탄생</b><div class="by"><span>예약에서 이어져요</span></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="notes">
+  <div><b>사진 자리</b>지금은 물들인 천 색을 흉내 낸 면으로 채웠어요. 실제로는 대표님이 올리시는 작품 사진이 들어가요.</div>
+  <div><b>서체는 Pretendard 하나</b>날짜·시간처럼 큰 글자는 가늘게, 표와 버튼은 보통 굵기로 두어 매일 빠르게 읽혀요. 숫자는 고정폭으로 줄이 맞아요.</div>
+  <div><b>다음에 정할 것</b>로고 파일과 A5 카드 시안을 받으면 로고 자리와 카드 비율을 실제 것으로 바꿔요.</div>
+</div>
+
+<footer><span class="en">Scene of Jeju — Admin mood, draft 1</span><span>테이크어냅 · 2026.10.29 · 이름과 숫자는 모두 예시예요</span></footer>
+</div>
