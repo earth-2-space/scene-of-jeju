@@ -11,14 +11,15 @@ import {
   relativeDayLabel,
   startOfWeek,
 } from "@/lib/dates";
-import { useReservations } from "@/lib/reservations/store";
-import type { Reservation } from "@/lib/reservations/types";
+import { reservationStore, useReservationStore } from "@/lib/reservations/store";
+import { needsReview, type Reservation } from "@/lib/reservations/types";
 import { useToday } from "@/lib/use-today";
 import { AddReservationSheet } from "./add-sheet";
 import { BoardAside } from "./board-aside";
 import { ReservationDetailSheet } from "./detail-sheet";
 import { FlowStrip } from "./flow-strip";
 import { NaverImportSheet } from "./import-sheet";
+import { MailSyncNote } from "./mail-sync-note";
 import {
   MessageDots,
   NewBadge,
@@ -37,7 +38,7 @@ const COLS =
 
 export function ReservationBoard() {
   const today = useToday();
-  const reservations = useReservations();
+  const { reservations, error } = useReservationStore();
   const [weekOffset, setWeekOffset] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
@@ -76,7 +77,16 @@ export function ReservationBoard() {
         }
       />
 
+      {error && (
+        <div role="alert" className="flex items-center gap-3 rounded-lg bg-jjok-soft px-4 py-2.5 text-[13px] text-jjok">
+          <span className="mr-auto">{error}</span>
+          <button type="button" className="underline" onClick={() => reservationStore.refresh()}>
+            다시 불러오기
+          </button>
+        </div>
+      )}
       <FlowStrip reservations={reservations} today={today} />
+      <MailSyncNote />
 
       <div className="grid items-start gap-6 xl:grid-cols-[1fr_300px]">
         <section aria-label="날짜별 예약" className="min-w-0 rounded-lg border border-line">
@@ -269,7 +279,8 @@ function Row({ r, onSelect }: { r: Reservation; onSelect: () => void }) {
       </span>
 
       <span className="justify-self-end md:justify-self-start">
-        {r.reviewed || faded ? <StatusChip status={r.status} /> : <NewBadge />}
+        {/* 이용완료·취소처럼 끝난 예약은 엑셀로 처음 들어와도 상태로 보여줘요 */}
+        {r.reviewed || faded || !needsReview(r) ? <StatusChip status={r.status} /> : <NewBadge />}
       </span>
 
       <span className="hidden md:inline-flex">

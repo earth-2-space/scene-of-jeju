@@ -93,15 +93,6 @@ export function BoardAside({
         </p>
       </Panel>
 
-      <button
-        type="button"
-        className="hint self-start hover:text-ink"
-        onClick={() => {
-          if (confirm("지금 화면의 예약을 지우고 예시 데이터로 되돌릴까요?")) reservationStore.resetToSample();
-        }}
-      >
-        예시 데이터로 되돌리기
-      </button>
     </aside>
   );
 }

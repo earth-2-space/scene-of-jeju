@@ -6,7 +6,8 @@ import { dotMonthDay, toISODate } from "@/lib/dates";
 import { NAVER_FIELDS } from "@/lib/naver-import/columns";
 import { NAVER_FIELD_GUIDE } from "@/lib/naver/types";
 import { parseNaverSheet } from "@/lib/naver-import/parse";
-import { readSheetFile, sampleNaverTable } from "@/lib/naver-import/read";
+import { LockedFileError, readSheetFile, sampleNaverTable } from "@/lib/naver-import/read";
+import { unlockNaverExcel } from "@/app/admin/reservations/actions";
 import { reservationStore, useReservations, type ImportResult } from "@/lib/reservations/store";
 import { RitualLabel, optionSummary } from "./marks";
 
@@ -30,15 +31,42 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
   const [parsed, setParsed] = useState<Parsed | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
+  /** 비밀번호가 걸린 엑셀: 비밀번호를 받아 서버에서 풀어요 */
+  const [locked, setLocked] = useState<File | null>(null);
+  const [unlocking, setUnlocking] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setError(null);
+    setLocked(null);
     try {
       setParsed({ ...parseNaverSheet(await readSheetFile(file)), fileName: file.name });
     } catch (e) {
       setParsed(null);
-      setError(e instanceof Error ? e.message : "파일을 읽지 못했어요.");
+      if (e instanceof LockedFileError) setLocked(file);
+      else setError(e instanceof Error ? e.message : "파일을 읽지 못했어요.");
+    }
+  }
+
+  async function onUnlock(form: HTMLFormElement) {
+    if (!locked) return;
+    const password = new FormData(form).get("password");
+    const data = new FormData();
+    data.set("file", locked);
+    data.set("password", String(password ?? ""));
+    setUnlocking(true);
+    setError(null);
+    try {
+      const res = await unlockNaverExcel(data);
+      if ("error" in res) return setError(res.error);
+      setParsed({ ...parseNaverSheet(res.table), fileName: locked.name });
+      setLocked(null);
+    } catch {
+      setError("파일을 풀지 못했어요. 잠시 뒤 다시 해 주세요.");
+    } finally {
+      setUnlocking(false);
+      form.reset();
     }
   }
 
@@ -49,7 +77,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
           새 예약 {result.added}건, 갱신 {result.updated}건
         </p>
         <p className="text-[14px] text-ink-2">
-          네이버 바로확정이라 “확정”으로 들어오고 “새 예약” 표시가 붙어요. 보드에서 확인을 누르면 카카오 안내가 대기열에 올라가요.
+          다가오는 예약은 “확정”과 “새 예약” 표시로 들어와요. 보드에서 확인을 누르면 카카오 안내가 대기열에 올라가요. 이용완료·취소된 예약은 그 상태 그대로 남겨요.
         </p>
         <button type="button" className="btn btn-fill self-start" onClick={onClose}>
           보드로 돌아가기
@@ -82,8 +110,38 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
         >
           예시 파일로 흐름 보기
         </button>
-        <span className="hint">지금은 CSV · 엑셀(.xlsx)은 샘플을 받은 뒤 열어요</span>
+        <span className="hint">스마트플레이스 예약자관리 엑셀(.xlsx) · CSV</span>
       </div>
+
+      {locked && (
+        <form
+          className="flex flex-col gap-2 rounded-lg border border-line px-4 py-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            onUnlock(e.currentTarget);
+          }}
+        >
+          <label htmlFor="naver-xlsx-password" className="text-[13px] font-semibold">
+            엑셀 비밀번호
+          </label>
+          <p className="hint">
+            {locked.name} · 네이버에서 내려받을 때 정한 비밀번호예요. 파일을 여는 데만 쓰고 저장하지 않아요.
+          </p>
+          <div className="flex gap-2">
+            <input
+              id="naver-xlsx-password"
+              name="password"
+              type="password"
+              autoComplete="off"
+              required
+              className="min-w-0 flex-1 rounded-full border border-line px-4 py-2 text-[14px]"
+            />
+            <button type="submit" className="btn btn-fill" disabled={unlocking}>
+              {unlocking ? "여는 중…" : "열기"}
+            </button>
+          </div>
+        </form>
+      )}
 
       {error && <p className="rounded-lg bg-jjok-soft px-3 py-2 text-[13px] text-jjok">{error}</p>}
 
@@ -173,10 +231,20 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
             <button
               type="button"
               className="btn btn-fill px-6"
-              disabled={parsed.rows.length === 0}
-              onClick={() => setResult(reservationStore.importNaver(parsed.rows))}
+              disabled={parsed.rows.length === 0 || importing}
+              onClick={async () => {
+                setImporting(true);
+                setError(null);
+                try {
+                  setResult(await reservationStore.importNaver(parsed.rows));
+                } catch (e) {
+                  setError(e instanceof Error ? e.message : "저장하지 못했어요.");
+                } finally {
+                  setImporting(false);
+                }
+              }}
             >
-              {parsed.rows.length}건 가져오기
+              {importing ? "저장 중…" : `${parsed.rows.length}건 가져오기`}
             </button>
           </div>
         </>

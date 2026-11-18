@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ADMIN_HOME, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/auth";
+import { createSessionValue } from "@/lib/session";
 
 export type LoginState = { error?: string };
 
@@ -25,7 +26,7 @@ export async function login(
     return { error: "아이디나 비밀번호가 달라요." };
   }
 
-  (await cookies()).set(SESSION_COOKIE, "1", {
+  (await cookies()).set(SESSION_COOKIE, createSessionValue(), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",

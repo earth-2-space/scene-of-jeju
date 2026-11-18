@@ -259,7 +259,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
   );
 }
 
-const OPTION_GROUPS: NaverOptionGroup[] = ["추가 프로그램", "수령 옵션", "언어"];
+const OPTION_GROUPS: NaverOptionGroup[] = ["가격분류", "추가 프로그램", "수령 옵션", "언어"];
 
 /** 네이버에서 넘어온 원본 정보. 어드민에서 고치지 않고 보여주기만 해요. */
 function NaverSection({ naver }: { naver: NaverBooking }) {
@@ -280,9 +280,14 @@ function NaverSection({ naver }: { naver: NaverBooking }) {
             </Row>
           );
         })}
-        <Row label="결제">{formatWon(naver.payment.amount)}</Row>
+        <Row label="결제">
+          {formatWon(naver.payment.amount)}
+          {naver.payment.refund ? ` · 환불 ${formatWon(naver.payment.refund)}` : ""}
+        </Row>
         <Row label="상태">{NAVER_STATUS_LABEL[naver.status]}</Row>
         {naver.bookedAt && <Row label="신청">{shortDateTime(naver.bookedAt)}</Row>}
+        {naver.channel && <Row label="유입경로">{naver.channel}</Row>}
+        {naver.maskedPhone && <Row label="전화번호">{naver.maskedPhone} · 네이버가 가린 번호</Row>}
         {naver.request && <Row label="요청사항">“{naver.request}”</Row>}
       </Rows>
     </SheetSection>

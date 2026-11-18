@@ -52,8 +52,10 @@ export function AddReservationSheet({
 function AddForm({ defaultDate, onDone }: { defaultDate: string; onDone: (r: Reservation) => void }) {
   const [product, setProduct] = useState<string>(RITUALS[0].id);
   const [source, setSource] = useState<ReservationSource>("manual");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const contact = String(f.get("contact") ?? "").trim();
@@ -81,7 +83,15 @@ function AddForm({ defaultDate, onDone }: { defaultDate: string; onDone: (r: Res
       },
       memo: String(f.get("memo") ?? "").trim(),
     };
-    onDone(reservationStore.add(input));
+    setSaving(true);
+    setError(null);
+    try {
+      onDone(await reservationStore.add(input));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장하지 못했어요.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -199,9 +209,11 @@ function AddForm({ defaultDate, onDone }: { defaultDate: string; onDone: (r: Res
       </Field>
 
       <div className="mt-auto flex items-center gap-3 border-t border-line pt-4">
-        <p className="hint mr-auto">확정으로 넣으면 확정 안내가 대기열에 올라가요.</p>
-        <button type="submit" className="btn btn-fill px-6">
-          예약 추가
+        <p className={`mr-auto ${error ? "text-[13px] text-jjok" : "hint"}`}>
+          {error ?? "확정으로 넣으면 확정 안내가 대기열에 올라가요."}
+        </p>
+        <button type="submit" className="btn btn-fill px-6" disabled={saving}>
+          {saving ? "저장 중…" : "예약 추가"}
         </button>
       </div>
     </form>
