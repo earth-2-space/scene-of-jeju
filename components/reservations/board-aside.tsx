@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { dotMonthDay, shortDateTime } from "@/lib/dates";
 import { CHANNEL_LABEL, MESSAGE_KIND_LABEL } from "@/lib/messages/types";
+import { STATUS_ACTIONS_ENABLED, STATUS_ACTIONS_LOCKED_HINT } from "@/lib/features";
 import { reservationStore } from "@/lib/reservations/store";
 import { needsReview, type Reservation } from "@/lib/reservations/types";
 import { RitualLabel } from "./marks";
@@ -28,6 +29,9 @@ export function BoardAside({
   return (
     <aside className="flex flex-col gap-4">
       <Panel title="확인할 예약" count={toConfirm.length}>
+        {!STATUS_ACTIONS_ENABLED && toConfirm.length > 0 && (
+          <p className="hint mb-1.5">확인·확정은 {STATUS_ACTIONS_LOCKED_HINT}</p>
+        )}
         {toConfirm.length === 0 ? (
           <p className="hint">모두 확인했어요.</p>
         ) : (
@@ -50,6 +54,8 @@ export function BoardAside({
                   <button
                     type="button"
                     className="btn btn-jjok px-2.5 py-1 text-[12px]"
+                    disabled={!STATUS_ACTIONS_ENABLED}
+                    title={STATUS_ACTIONS_ENABLED ? undefined : STATUS_ACTIONS_LOCKED_HINT}
                     onClick={() => reservationStore.review(r.id)}
                   >
                     확인
@@ -58,6 +64,8 @@ export function BoardAside({
                   <button
                     type="button"
                     className="btn btn-jjok px-2.5 py-1 text-[12px]"
+                    disabled={!STATUS_ACTIONS_ENABLED}
+                    title={STATUS_ACTIONS_ENABLED ? undefined : STATUS_ACTIONS_LOCKED_HINT}
                     onClick={() => reservationStore.setStatus(r.id, "confirmed")}
                   >
                     확정
