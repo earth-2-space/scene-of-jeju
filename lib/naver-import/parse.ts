@@ -1,4 +1,4 @@
-import type { NaverBooking, NaverStatus } from "@/lib/naver/types";
+import type { NaverBooking, NaverBookingDetail, NaverStatus } from "@/lib/naver/types";
 import {
   ADD_ONS,
   LANG_LABEL,
@@ -12,8 +12,11 @@ import {
 } from "@/lib/rituals";
 import type { ReservationInput, ReservationStatus } from "@/lib/reservations/types";
 import {
+  NAVER_COUNT_COLUMN,
   NAVER_FIELDS,
+  NAVER_IGNORE_OPTIONS,
   NAVER_OPTION_NAMES,
+  NAVER_PEOPLE_WORD,
   NAVER_PRODUCT_RULES,
   NAVER_STATUS_TEXT,
   type NaverField,
@@ -69,21 +72,62 @@ export function matchColumns(headers: string[]): ColumnMatch {
 export type RowError = { row: number; reason: string };
 export type ParsedRows = { rows: ReservationInput[]; errors: RowError[] };
 
-/** 첫 줄은 열 이름, 나머지는 예약 한 줄씩 */
+/** 열 이름 줄 찾기: 예약번호 열이 있는 첫 줄. 네이버 엑셀은 위에 안내 문구 두 줄이 있어요. */
+function findHeaderRow(table: string[][]) {
+  const i = table.slice(0, 10).findIndex((row) => matchColumns(row).index.bookingId !== undefined);
+  return Math.max(0, i);
+}
+
+type CountColumn = { index: number; kind: "옵션" | "필수" | "가격분류"; name: string };
+
+/** "옵션2-한국어" 같은 수량 칸들. "… 결제금액" 칸은 빼요. */
+function countColumns(headers: string[]): CountColumn[] {
+  return headers.flatMap((h, index) => {
+    const m = h.trim().match(NAVER_COUNT_COLUMN);
+    if (!m || /결제금액$/.test(h.trim())) return [];
+    return [{ index, kind: m[1] as CountColumn["kind"], name: m[2].trim() }];
+  });
+}
+
+const isMasked = (s: string) => s.includes("*");
+const num = (s: string) => Number(s.replace(/[^\d]/g, "")) || 0;
+
+/** 첫 줄(안내 문구가 있으면 그 아래)은 열 이름, 나머지는 예약 한 줄씩 */
 export function parseNaverSheet(table: string[][]): { match: ColumnMatch } & ParsedRows {
-  const [headers = [], ...body] = table;
+  const headerAt = findHeaderRow(table);
+  const headers = table[headerAt] ?? [];
+  const body = table.slice(headerAt + 1);
   const match = matchColumns(headers);
+  const counts = countColumns(headers);
+  if (counts.length) {
+    // 한 칸짜리 옵션·인원 열이 없으면, 항목별 수량 칸에서 읽는다고 보여줘요.
+    if (match.index.options === undefined) match.header.options = `항목별 수량 칸 ${counts.length}개`;
+    if (match.index.people === undefined) match.header.people = "참가비·아이템 수량으로 계산";
+    const used = new Set(counts.map((c) => headers[c.index]).concat(counts.map((c) => `${headers[c.index]} 결제금액`)));
+    match.unused = match.unused.filter((h) => !used.has(h));
+  }
   if (match.missingRequired.length > 0) return { match, rows: [], errors: [] };
+
+  const col = (name: string) => headers.findIndex((h) => norm(h) === norm(name));
+  const extra = {
+    channel: col("유입경로"),
+    refund: col("환불금액"),
+    answers: headers.flatMap((h, i) => (h.startsWith("예약자입력정보") ? [i] : [])),
+  };
+
+  const read = new Set([extra.channel, extra.refund, ...extra.answers].filter((i) => i >= 0).map((i) => headers[i]));
+  match.unused = match.unused.filter((h) => !read.has(h));
 
   const rows: ReservationInput[] = [];
   const errors: RowError[] = [];
 
   body.forEach((cells, i) => {
-    if (cells.every((c) => !c.trim())) return;
-    const rowNo = i + 2; // 엑셀에서 보이는 줄 번호
+    if (cells.every((c) => !String(c ?? "").trim())) return;
+    const rowNo = headerAt + i + 2; // 엑셀에서 보이는 줄 번호
+    const cell = (idx: number) => (idx < 0 ? "" : String(cells[idx] ?? "").trim());
     const get = (f: NaverField) => {
       const idx = match.index[f];
-      return idx === undefined ? "" : (cells[idx] ?? "").trim();
+      return idx === undefined ? "" : cell(idx);
     };
 
     const when = parseDateTime(get("date"), get("time"));
@@ -96,12 +140,66 @@ export function parseNaverSheet(table: string[][]): { match: ColumnMatch } & Par
     const bookingId = get("bookingId");
     if (!bookingId) return errors.push({ row: rowNo, reason: "예약번호가 비어 있어요" });
 
-    const people = Math.max(1, parseInt(get("people"), 10) || 1);
-    const opts = parseOptions(get("options"), people);
+    // 옵션: 한 칸("풍경한입(2), …")이거나, 항목마다 수량 칸이 따로 있거나
+    const picked = counts
+      .map((c) => ({ ...c, count: Number(cell(c.index)) || 0 }))
+      .filter((c) => c.count > 0 && !NAVER_IGNORE_OPTIONS.some((w) => c.name.includes(w)));
+    const optionText =
+      get("options") ||
+      picked
+        .filter((c) => c.kind !== "가격분류")
+        .map((c) => `${c.name}(${c.count})`)
+        .join(", ");
+    const people = Math.max(1, parseInt(get("people"), 10) || guessPeople(picked));
+    const opts = parseOptions(optionText, people);
+    // 가격분류(아이템·참가비)는 원본 그대로 남겨요
+    for (const c of picked.filter((c) => c.kind === "가격분류")) {
+      opts.raw.push({ group: "가격분류", name: c.name, count: c.count, price: 0 });
+    }
+
+    // 가격분류 금액: "… 결제금액" 칸에서 1인(1개) 값을 구해요
+    for (const o of opts.raw) {
+      if (o.group !== "가격분류") continue;
+      const total = num(cell(col(`${headers[counts.find((c) => c.name === o.name)?.index ?? -1] ?? ""} 결제금액`)));
+      if (total && o.count) o.price = Math.round(total / o.count);
+    }
+
     const naverStatus = NAVER_STATUS_TEXT[norm(get("status"))] ?? "confirmed";
+    const at = (name: string) => {
+      const v = parseDateTime(cell(col(name)), "");
+      return v ? `${v.date}T${v.time}` : undefined;
+    };
+    const text = (name: string) => cell(col(name)) || undefined;
+    const detail: NaverBookingDetail = {
+      orderNo: text("주문번호"),
+      productOrderNo: text("상품주문번호"),
+      statusText: get("status") || undefined,
+      bookingType: text("예약유형"),
+      email: text("이메일"),
+      visitorName: text("방문자"),
+      visitorPhone: text("방문자전화번호"),
+      payAmount: num(cell(col("결제금액"))) || undefined,
+      couponDiscount: num(cell(col("쿠폰적용금액"))) || undefined,
+      cardDiscount: num(cell(col("카드할인금액"))) || undefined,
+      payMethod: text("결제수단"),
+      payStatus: text("결제상태"),
+      cancelFee: num(cell(col("취소수수료"))) || undefined,
+      staffMemo: text("직원메모"),
+      confirmedAt: at("예약확정일시"),
+      completedAt: at("이용완료일시"),
+      cancelReason: text("취소사유"),
+      answers: extra.answers
+        .map((i) => ({ question: headers[i].replace(/^예약자입력정보\d*-/, "").trim(), answer: cell(i) }))
+        .filter((a) => a.answer),
+      raw: Object.fromEntries(headers.map((h, i) => [h, cell(i)]).filter(([h, v]) => h && v)),
+    };
+    const canceledAt = at("예약취소일시");
     const bookedAt = parseDateTime(get("bookedAt"), "");
-    const amount = Number(get("amount").replace(/[^\d]/g, "")) || 0;
-    const request = get("request");
+    const amount = num(get("amount"));
+    const refund = num(cell(extra.refund));
+    const answers = extra.answers.map(cell).filter(Boolean);
+    const request = [get("request"), ...answers].filter(Boolean).join(" / ");
+    const phone = get("phone");
 
     const naver: NaverBooking = {
       bookingId,
@@ -113,9 +211,15 @@ export function parseNaverSheet(table: string[][]): { match: ColumnMatch } & Par
       options: opts.raw,
       payment: {
         amount,
-        listAmount: rule.privateClass ? undefined : amount + (PRICE.base - PRICE.naver) * people,
+        // 실제 엑셀은 상품마다 가격이 달라서(푸른풍경 7만원 등) 정가를 짐작하지 않아요. 예시 표에서만 계산해요.
+        listAmount: counts.length || rule.privateClass ? undefined : amount + (PRICE.base - PRICE.naver) * people,
+        refund: refund || undefined,
       },
       request: request || undefined,
+      channel: cell(extra.channel) || undefined,
+      maskedPhone: phone && isMasked(phone) ? phone : undefined,
+      canceledAt,
+      detail,
     };
 
     rows.push({
@@ -132,12 +236,27 @@ export function parseNaverSheet(table: string[][]): { match: ColumnMatch } & Par
       source: "naver",
       naverBookingId: bookingId,
       naver,
-      customer: { name: get("name"), phone: get("phone") || undefined },
+      // 네이버가 가린 번호(******1234)는 안내를 보낼 수 없어서 연락처로 두지 않아요.
+      customer: { name: get("name"), phone: phone && !isMasked(phone) ? phone : undefined },
       memo: "",
     });
   });
 
   return { match, rows, errors };
+}
+
+/**
+ * 인원 열이 없을 때: "참가비" 수량이 있으면 그게 인원이에요.
+ * 옛 상품은 아이템 수와 언어 선택 수 중 큰 쪽으로 어림해요.
+ */
+function guessPeople(picked: (CountColumn & { count: number })[]) {
+  const sum = (xs: { count: number }[]) => xs.reduce((n, x) => n + x.count, 0);
+  const fees = picked.filter((c) => c.kind === "가격분류" && c.name.includes(NAVER_PEOPLE_WORD));
+  if (fees.length) return sum(fees);
+  const langNames = Object.keys(NAVER_OPTION_NAMES.lang).map(norm);
+  const items = sum(picked.filter((c) => c.kind === "가격분류"));
+  const langs = sum(picked.filter((c) => langNames.includes(norm(c.name))));
+  return Math.max(items, langs, 1);
 }
 
 /**
@@ -193,10 +312,11 @@ const pad = (n: number) => String(n).padStart(2, "0");
  * 흔한 모양을 받아요. 시간은 따로 열이 있으면 그걸 써요("오후 2:00"도 받아요).
  */
 export function parseDateTime(dateText: string, timeText: string): { date: string; time: string } | null {
-  const ymd = dateText.match(/(\d{4})\s*[.\-/년]\s*(\d{1,2})\s*[.\-/월]\s*(\d{1,2})/);
+  // "26. 4. 10.(금)"처럼 연도가 두 자리인 것도 받아요.
+  const ymd = dateText.match(/(\d{4}|\d{2}(?=\s*[.년]))\s*[.\-/년]\s*(\d{1,2})\s*[.\-/월]\s*(\d{1,2})/);
   const mdy = dateText.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   let y: number, m: number, d: number;
-  if (ymd) [y, m, d] = [Number(ymd[1]), Number(ymd[2]), Number(ymd[3])];
+  if (ymd) [y, m, d] = [Number(ymd[1]) < 100 ? 2000 + Number(ymd[1]) : Number(ymd[1]), Number(ymd[2]), Number(ymd[3])];
   else if (mdy) [y, m, d] = [Number(mdy[3]), Number(mdy[1]), Number(mdy[2])];
   else return null;
 

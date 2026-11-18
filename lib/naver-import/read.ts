@@ -1,21 +1,49 @@
 import { addDays, dotMonthDay } from "@/lib/dates";
 
 /**
- * 파일 → 표(줄 × 칸). 지금은 CSV만 읽어요.
- * 네이버에서 .xlsx로 내려받는다면, 샘플을 받은 뒤 엑셀 읽는 라이브러리를 여기에만 붙이면 돼요.
- * (엑셀에서 "다른 이름으로 저장 → CSV UTF-8"로 저장하면 지금도 올릴 수 있어요)
+ * 파일 → 표(줄 × 칸). CSV와 엑셀(.xlsx)을 읽어요.
+ * 네이버에서 내려받은 엑셀은 비밀번호가 걸려 있어요. 그런 파일은 LockedFileError를 던지고,
+ * 화면에서 비밀번호를 받아 서버(unlockNaverExcel)에서 풀어요.
  */
+export class LockedFileError extends Error {
+  constructor() {
+    super("비밀번호가 걸린 엑셀이에요. 내려받을 때 정한 비밀번호를 적어 주세요.");
+  }
+}
+
+const OLE_MAGIC = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
+
 export async function readSheetFile(file: File): Promise<string[][]> {
   const name = file.name.toLowerCase();
   if (name.endsWith(".csv") || name.endsWith(".txt")) {
     return parseCsv(await file.text());
   }
   if (name.endsWith(".xlsx") || name.endsWith(".xls")) {
-    throw new Error(
-      "엑셀 파일(.xlsx)은 네이버 샘플을 받은 뒤에 열어요. 지금은 엑셀에서 CSV(UTF-8)로 저장해서 올려 주세요.",
-    );
+    const head = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+    if (OLE_MAGIC.every((b, i) => head[i] === b)) throw new LockedFileError();
+    const { default: readXlsxFile } = await import("read-excel-file/browser");
+    const [sheet] = await readXlsxFile(file);
+    return sheetToTable(sheet?.data ?? []);
   }
-  throw new Error("CSV 파일을 골라 주세요.");
+  throw new Error("CSV나 엑셀(.xlsx) 파일을 골라 주세요.");
+}
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/**
+ * 엑셀 칸 → 글자. 날짜 칸은 "2026.04.10 15:05"로 바꿔요.
+ * 엑셀 날짜엔 시간대가 없어서 UTC 값 그대로가 제주 현지 시각이에요.
+ */
+export function sheetToTable(data: unknown[][]): string[][] {
+  return data.map((row) =>
+    row.map((c) => {
+      if (c === null || c === undefined) return "";
+      if (c instanceof Date) {
+        return `${c.getUTCFullYear()}.${pad(c.getUTCMonth() + 1)}.${pad(c.getUTCDate())} ${pad(c.getUTCHours())}:${pad(c.getUTCMinutes())}`;
+      }
+      return String(c);
+    }),
+  );
 }
 
 /** 따옴표·줄바꿈·BOM을 처리하는 작은 CSV 파서 */

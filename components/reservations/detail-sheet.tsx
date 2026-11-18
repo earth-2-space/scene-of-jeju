@@ -24,6 +24,7 @@ import {
   type AddOnId,
 } from "@/lib/rituals";
 import { onsiteItemRange, prepaidAmount } from "@/lib/reservations/price";
+import { STATUS_ACTIONS_ENABLED, STATUS_ACTIONS_LOCKED_HINT } from "@/lib/features";
 import { reservationStore } from "@/lib/reservations/store";
 import {
   STATUS_LABEL,
@@ -68,6 +69,8 @@ export function ReservationDetailSheet({
   );
 }
 
+const locked = !STATUS_ACTIONS_ENABLED;
+
 function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose: () => void }) {
   const setStatus = (s: ReservationStatus) => reservationStore.setStatus(r.id, s);
   const unreviewed = !r.reviewed && r.status === "confirmed";
@@ -99,13 +102,21 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
             <p className="mt-0.5 text-[12.5px] text-ink-2">
               손님은 네이버 확정 알림을 이미 받았어요. 확인하면 씬오브제주 카카오 안내와 전날 리마인드가 잡혀요.
             </p>
-            <button type="button" className="btn btn-jjok mt-3" onClick={() => reservationStore.review(r.id)}>
-              확인하고 안내 잡기
-            </button>
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                type="button"
+                className="btn btn-jjok"
+                disabled={locked}
+                onClick={() => reservationStore.review(r.id)}
+              >
+                확인하고 안내 잡기
+              </button>
+              {locked && <span className="hint">{STATUS_ACTIONS_LOCKED_HINT}</span>}
+            </div>
           </div>
         )}
 
-        <SheetSection title="상태">
+        <SheetSection title="상태" aside={locked ? STATUS_ACTIONS_LOCKED_HINT : undefined}>
           <div role="radiogroup" aria-label="예약 상태" className="flex flex-wrap gap-1">
             {STATUS_ORDER.map((s) => (
               <button
@@ -113,11 +124,14 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
                 type="button"
                 role="radio"
                 aria-checked={r.status === s}
+                disabled={locked}
                 onClick={() => setStatus(s)}
-                className={`rounded-md border px-2.5 py-1 text-[13px] ${
+                className={`rounded-md border px-2.5 py-1 text-[13px] disabled:cursor-not-allowed ${
                   r.status === s
                     ? "border-ink bg-ink text-paper"
-                    : "border-line text-ink-2 hover:border-ink-3 hover:text-ink"
+                    : locked
+                      ? "border-line-2 text-ink-3"
+                      : "border-line text-ink-2 hover:border-ink-3 hover:text-ink"
                 }`}
               >
                 {STATUS_LABEL[s]}
@@ -126,7 +140,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
           </div>
           {!unreviewed && STATUS_HINT[r.status] && <p className="hint mt-2">{STATUS_HINT[r.status]}</p>}
           {primary && (
-            <button type="button" className="btn btn-jjok mt-3" onClick={() => setStatus(primary.to)}>
+            <button type="button" className="btn btn-jjok mt-3" disabled={locked} onClick={() => setStatus(primary.to)}>
               {primary.label}
             </button>
           )}
@@ -259,7 +273,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
   );
 }
 
-const OPTION_GROUPS: NaverOptionGroup[] = ["추가 프로그램", "수령 옵션", "언어"];
+const OPTION_GROUPS: NaverOptionGroup[] = ["가격분류", "추가 프로그램", "수령 옵션", "언어"];
 
 /** 네이버에서 넘어온 원본 정보. 어드민에서 고치지 않고 보여주기만 해요. */
 function NaverSection({ naver }: { naver: NaverBooking }) {
@@ -280,9 +294,14 @@ function NaverSection({ naver }: { naver: NaverBooking }) {
             </Row>
           );
         })}
-        <Row label="결제">{formatWon(naver.payment.amount)}</Row>
+        <Row label="결제">
+          {formatWon(naver.payment.amount)}
+          {naver.payment.refund ? ` · 환불 ${formatWon(naver.payment.refund)}` : ""}
+        </Row>
         <Row label="상태">{NAVER_STATUS_LABEL[naver.status]}</Row>
         {naver.bookedAt && <Row label="신청">{shortDateTime(naver.bookedAt)}</Row>}
+        {naver.channel && <Row label="유입경로">{naver.channel}</Row>}
+        {naver.maskedPhone && <Row label="전화번호">{naver.maskedPhone} · 네이버가 가린 번호</Row>}
         {naver.request && <Row label="요청사항">“{naver.request}”</Row>}
       </Rows>
     </SheetSection>
