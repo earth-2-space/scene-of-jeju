@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listTalkThreadsAction, openTalkThreadAction, replyTalkAction } from "@/app/admin/inbox/actions";
 import { PageTop } from "@/components/admin/page-top";
-import { TALK_SENDER_LABEL, type TalkMessage, type TalkThread } from "@/lib/talk/types";
+import { TALK_SENDER_LABEL, TALK_UNREAD_EVENT, type TalkMessage, type TalkThread } from "@/lib/talk/types";
 
 /*
  * 문의함: 네이버 톡톡 대화. 30초마다(그리고 창으로 돌아올 때) 다시 읽어요.
@@ -33,7 +33,10 @@ export function TalkInbox() {
   const loadThreads = useCallback(async () => {
     const res = await listTalkThreadsAction();
     if ("error" in res) setError(res.error);
-    else setThreads(res.data);
+    else {
+      setThreads(res.data);
+      window.dispatchEvent(new Event(TALK_UNREAD_EVENT));
+    }
   }, []);
 
   const loadMessages = useCallback(async (userId: string) => {
@@ -42,6 +45,7 @@ export function TalkInbox() {
     else {
       setMessages(res.data);
       setThreads((ts) => ts?.map((t) => (t.userId === userId ? { ...t, unread: 0 } : t)) ?? ts);
+      window.dispatchEvent(new Event(TALK_UNREAD_EVENT));
     }
   }, []);
 

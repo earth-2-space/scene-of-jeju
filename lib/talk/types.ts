@@ -48,6 +48,9 @@ export const TALK_SENDER_LABEL: Record<TalkSender, string> = {
   partner_center: "파트너센터",
 };
 
+/** 문의함이 안 읽음 수를 바꿨을 때 왼쪽 메뉴 뱃지에 알리는 창 이벤트 */
+export const TALK_UNREAD_EVENT = "soj:talk-unread";
+
 /** 톡톡이 정한 글자 수 한도 */
 export const TALK_TEXT_MAX = 10_000;
 

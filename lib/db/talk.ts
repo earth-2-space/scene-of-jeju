@@ -168,6 +168,16 @@ export async function listTalkThreads(): Promise<TalkThread[]> {
   return rows.map(toThread);
 }
 
+/** 왼쪽 메뉴 뱃지: 안 읽은 손님 메시지가 있는 대화 수 */
+export async function unreadTalkCount(): Promise<number> {
+  const { count, error } = await db()
+    .from("talk_threads")
+    .select("user_id", { count: "exact", head: true })
+    .gt("unread", 0);
+  if (error) throw new Error(`DB 오류: ${error.message}`);
+  return count ?? 0;
+}
+
 /** 대화 열기: 메시지를 읽고 안 읽음 수를 비워요 */
 export async function openTalkThread(userId: string): Promise<TalkMessage[]> {
   const rows = must(

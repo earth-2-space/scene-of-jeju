@@ -21,6 +21,10 @@ export async function listTalkThreadsAction(): Promise<Result<TalkThread[]>> {
   return run(() => talk.listTalkThreads());
 }
 
+export async function unreadTalkCountAction(): Promise<Result<number>> {
+  return run(() => talk.unreadTalkCount());
+}
+
 export async function openTalkThreadAction(userId: string): Promise<Result<TalkMessage[]>> {
   return run(() => talk.openTalkThread(String(userId)));
 }

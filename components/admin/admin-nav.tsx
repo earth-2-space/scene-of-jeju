@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV, ADMIN_NAV_LATER } from "@/lib/admin-nav";
+import { useTalkUnread } from "@/lib/talk/use-unread";
 
 export function AdminNav() {
   const pathname = usePathname();
+  const unread = useTalkUnread();
 
   return (
     <nav
@@ -24,6 +26,14 @@ export function AdminNav() {
             }`}
           >
             {item.label}
+            {item.href === "/admin/inbox" && unread > 0 && (
+              <span
+                aria-label={`안 읽은 문의 ${unread}건`}
+                className="ml-1.5 inline-block min-w-[18px] rounded-full bg-jjok px-1.5 text-center text-[11px] leading-[18px] font-semibold text-paper"
+              >
+                {unread > 99 ? "99+" : unread}
+              </span>
+            )}
           </Link>
         );
       })}
