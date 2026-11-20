@@ -28,7 +28,7 @@ export function AdminNav() {
         );
       })}
 
-      <div className="mt-4 mb-1 hidden px-2.5 text-[11px] text-ink-3 lg:block">준비 중</div>
+      <div className="mt-4 mb-1 hidden px-2.5 text-[12px] text-ink-3 lg:block">준비 중</div>
       {ADMIN_NAV_LATER.map((label) => (
         <span
           key={label}

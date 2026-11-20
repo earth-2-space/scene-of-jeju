@@ -56,7 +56,7 @@ export function SheetHeader({
   return (
     <div className="flex items-start gap-4 border-b border-line px-6 pt-5 pb-4">
       <div className="min-w-0">
-        <h2 className="text-[18px] leading-tight font-semibold tracking-[-0.01em]">{title}</h2>
+        <h2 className="font-serif text-[22px] leading-tight font-semibold tracking-[-0.01em]">{title}</h2>
         {sub && <p className="mt-1 text-[13px] text-ink-3">{sub}</p>}
       </div>
       <button type="button" onClick={onClose} className="btn ml-auto shrink-0 px-2.5 py-1">

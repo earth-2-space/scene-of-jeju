@@ -98,7 +98,7 @@ export function ReservationBoard() {
             onWeek={setWeekOffset}
           />
 
-          <div className={`${COLS} hidden border-b border-line bg-sheet px-4 py-2 text-[12px] text-ink-3 md:grid`}>
+          <div className={`${COLS} hidden border-b border-line bg-sheet px-4 py-2 text-[13px] text-ink-3 md:grid`}>
             <span>시간</span>
             <span>예약자</span>
             <span>리추얼</span>
@@ -157,13 +157,13 @@ function WeekNav({
           {dotMonthDay(weekDays[0])} – {dotMonthDay(weekDays[6])}
         </span>
         <span className="ml-auto flex gap-1">
-          <button type="button" className="btn px-2 py-1 text-[12px]" onClick={() => onWeek(weekOffset - 1)} aria-label="지난 주">
+          <button type="button" className="btn px-2 py-1 text-[13px]" onClick={() => onWeek(weekOffset - 1)} aria-label="지난 주">
             ←
           </button>
-          <button type="button" className="btn px-2.5 py-1 text-[12px]" disabled={weekOffset === 0} onClick={() => onWeek(0)}>
+          <button type="button" className="btn px-2.5 py-1 text-[13px]" disabled={weekOffset === 0} onClick={() => onWeek(0)}>
             이번 주
           </button>
-          <button type="button" className="btn px-2 py-1 text-[12px]" onClick={() => onWeek(weekOffset + 1)} aria-label="다음 주">
+          <button type="button" className="btn px-2 py-1 text-[13px]" onClick={() => onWeek(weekOffset + 1)} aria-label="다음 주">
             →
           </button>
         </span>
@@ -176,13 +176,13 @@ function WeekNav({
             <li key={d}>
               <a
                 href={counts[i] > 0 || isToday ? `#day-${d}` : undefined}
-                className={`flex flex-col items-center rounded-md py-1.5 text-[11px] ${
-                  isToday ? "bg-ink text-paper" : past ? "text-ink-3" : "text-ink-2 hover:bg-sheet"
+                className={`flex flex-col items-center rounded-md py-1.5 text-[12px] ${
+                  isToday ? "bg-jjok-soft text-jjok" : past ? "text-ink-3" : "text-ink-2 hover:bg-sheet"
                 }`}
               >
                 <span>{koWeekday(d)}</span>
                 <span className="text-[15px] leading-tight font-semibold">{Number(d.slice(8))}</span>
-                <span className={`h-4 ${isToday ? "text-paper/80" : "text-ink-3"}`}>
+                <span className={`h-4 ${isToday ? "text-jjok" : "text-ink-3"}`}>
                   {counts[i] > 0 ? `${counts[i]}팀` : ""}
                 </span>
               </a>
@@ -214,7 +214,7 @@ function DayGroup({
           {koMonthDay(day)} ({koWeekday(day)})
         </span>
         {rel && (
-          <span className={`text-[12px] ${rel === "오늘" ? "font-semibold text-jjok" : "text-ink-3"}`}>{rel}</span>
+          <span className={`text-[13px] ${rel === "오늘" ? "font-semibold text-jjok" : "text-ink-3"}`}>{rel}</span>
         )}
         <span className="hint ml-auto">{items.filter(isActive).length}팀</span>
       </div>
@@ -250,12 +250,12 @@ function Row({ r, onSelect }: { r: Reservation; onSelect: () => void }) {
           {r.customer.name}
           <span className="ml-1.5 font-normal text-ink-3">{r.people}명</span>
         </span>
-        <span className="block truncate text-[12px] text-ink-3 md:hidden">
+        <span className="block truncate text-[13px] text-ink-3 md:hidden">
           <RitualLabel r={r} withName={false} /> · <SourceLabel r={r} />
           {extras.length > 0 && ` · ${extras.join(" · ")}`}
         </span>
         {extras.length > 0 && (
-          <span className="hidden truncate text-[12px] text-ink-3 md:block">{extras.join(" · ")}</span>
+          <span className="hidden truncate text-[13px] text-ink-3 md:block">{extras.join(" · ")}</span>
         )}
       </span>
 
@@ -267,7 +267,7 @@ function Row({ r, onSelect }: { r: Reservation; onSelect: () => void }) {
         {r.naver ? (
           <>
             {formatWonShort(r.naver.payment.amount)}
-            <span className="block text-[12px] text-ink-3">네이버페이 · 아이템 현장</span>
+            <span className="block text-[13px] text-ink-3">네이버페이 · 아이템 현장</span>
           </>
         ) : (
           <span className="text-ink-3">—</span>

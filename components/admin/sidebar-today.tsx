@@ -15,7 +15,7 @@ export function SidebarToday() {
     ).length;
 
   return (
-    <div className="text-[12px] leading-relaxed text-ink-2">
+    <div className="text-[13px] leading-relaxed text-ink-2">
       <b className="block text-[13px] font-semibold text-ink">
         {koMonthDay(today)} ({koWeekday(today)})
       </b>

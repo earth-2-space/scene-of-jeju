@@ -20,7 +20,7 @@ export function FlowStrip({ reservations, today }: { reservations: Reservation[]
     <ol aria-label="예약 흐름" className="grid grid-cols-3 gap-2">
       {steps.map((s, i) => (
         <li key={s.label} className="relative rounded-lg border border-line px-3 py-2.5 sm:px-4 sm:py-3">
-          <div className="text-[11px] leading-snug text-ink-2 sm:text-[12px]">
+          <div className="text-[12px] leading-snug text-ink-2 sm:text-[13px]">
             <span className="mr-1.5 hidden text-ink-3 sm:inline">{i + 1}</span>
             {s.label}
           </div>
@@ -30,7 +30,7 @@ export function FlowStrip({ reservations, today }: { reservations: Reservation[]
           </div>
           <div className="hint hidden sm:block">{s.note}</div>
           {i < steps.length - 1 && (
-            <span aria-hidden className="absolute top-1/2 -right-2 z-1 hidden -translate-y-1/2 bg-paper text-[12px] text-ink-3 sm:block">
+            <span aria-hidden className="absolute top-1/2 -right-2 z-1 hidden -translate-y-1/2 bg-paper text-[13px] text-ink-3 sm:block">
               →
             </span>
           )}

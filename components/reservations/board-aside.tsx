@@ -45,7 +45,7 @@ export function BoardAside({
                       {r.status === "inquiry" ? "문의" : r.status === "pending" ? "대기" : "네이버 새 예약"}
                     </span>
                   </span>
-                  <span className="flex gap-1.5 text-[12px] text-ink-3">
+                  <span className="flex gap-1.5 text-[13px] text-ink-3">
                     {dotMonthDay(r.date)} {r.time}
                     <RitualLabel r={r} withName={false} />
                   </span>
@@ -53,7 +53,7 @@ export function BoardAside({
                 {r.status === "confirmed" ? (
                   <button
                     type="button"
-                    className="btn btn-jjok px-2.5 py-1 text-[12px]"
+                    className="shrink-0 px-1 py-1 text-[14px] font-semibold text-jjok underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-3 disabled:no-underline"
                     disabled={!STATUS_ACTIONS_ENABLED}
                     title={STATUS_ACTIONS_ENABLED ? undefined : STATUS_ACTIONS_LOCKED_HINT}
                     onClick={() => reservationStore.review(r.id)}
@@ -63,7 +63,7 @@ export function BoardAside({
                 ) : (
                   <button
                     type="button"
-                    className="btn btn-jjok px-2.5 py-1 text-[12px]"
+                    className="shrink-0 px-1 py-1 text-[14px] font-semibold text-jjok underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-ink-3 disabled:no-underline"
                     disabled={!STATUS_ACTIONS_ENABLED}
                     title={STATUS_ACTIONS_ENABLED ? undefined : STATUS_ACTIONS_LOCKED_HINT}
                     onClick={() => reservationStore.setStatus(r.id, "confirmed")}
@@ -87,7 +87,7 @@ export function BoardAside({
                 <span className="w-[76px] shrink-0 text-ink-3">{shortDateTime(m.scheduledAt)}</span>
                 <span className="min-w-0 truncate">
                   {MESSAGE_KIND_LABEL[m.kind]} · {r.customer.name}
-                  <span className="ml-1 text-[12px] text-ink-3">{CHANNEL_LABEL[m.channel]}</span>
+                  <span className="ml-1 text-[13px] text-ink-3">{CHANNEL_LABEL[m.channel]}</span>
                 </span>
               </li>
             ))}
