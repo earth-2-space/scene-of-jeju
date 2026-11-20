@@ -31,24 +31,24 @@ export function optionSummary(r: Pick<Reservation, "addOns" | "pickup" | "lang">
 /** 아직 확인 안 한 네이버 예약 표시 */
 export function NewBadge() {
   return (
-    <span className="inline-flex items-center rounded-md bg-jjok px-1.5 py-px text-[11px] font-semibold text-paper">
+    <span className="text-[14px] font-semibold whitespace-nowrap text-jjok">
       새 예약
     </span>
   );
 }
 
 const STATUS_STYLE: Record<ReservationStatus, string> = {
-  inquiry: "border border-dashed border-ink-3 text-ink-2",
-  pending: "bg-jjok-soft text-jjok font-semibold",
-  confirmed: "bg-sheet-2 text-ink",
-  visited: "bg-moss-soft text-moss",
+  inquiry: "text-ink-2",
+  pending: "text-jjok font-semibold",
+  confirmed: "text-ink",
+  visited: "text-moss font-medium",
   no_show: "text-ink-3 line-through",
   canceled: "text-ink-3 line-through",
 };
 
 export function StatusChip({ status }: { status: ReservationStatus }) {
   return (
-    <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-[12px] whitespace-nowrap ${STATUS_STYLE[status]}`}>
+    <span className={`text-[14px] whitespace-nowrap ${STATUS_STYLE[status]}`}>
       {STATUS_LABEL[status]}
     </span>
   );
@@ -62,7 +62,7 @@ const SOURCE_TEXT: Record<Reservation["source"], string> = {
 
 /** 들어온 곳: 네이버는 초록 N 대신 글자로만, 담백하게 */
 export function SourceLabel({ r }: { r: Reservation }) {
-  return <span className="text-[12px] whitespace-nowrap text-ink-3">{SOURCE_TEXT[r.source]}</span>;
+  return <span className="text-[13px] whitespace-nowrap text-ink-3">{SOURCE_TEXT[r.source]}</span>;
 }
 
 const DOT_KINDS: MessageKind[] = ["confirm", "remind", "scene"];

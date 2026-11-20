@@ -73,7 +73,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
   if (result) {
     return (
       <div className="flex flex-1 flex-col gap-4 px-6 py-8">
-        <p className="text-[22px] font-semibold tracking-[-0.02em]">
+        <p className="font-serif text-[22px] font-semibold tracking-[-0.02em]">
           새 예약 {result.added}건, 갱신 {result.updated}건
         </p>
         <p className="text-[14px] text-ink-2">
@@ -173,10 +173,10 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
               </tbody>
             </table>
             {parsed.match.unused.length > 0 && (
-              <p className="mt-2 text-[12px] text-ink-3">쓰지 않는 열: {parsed.match.unused.join(", ")}</p>
+              <p className="mt-2 text-[13px] text-ink-3">쓰지 않는 열: {parsed.match.unused.join(", ")}</p>
             )}
             {parsed.match.missingRequired.length > 0 && (
-              <p className="mt-2 text-[12.5px] text-jjok">
+              <p className="mt-2 text-[13px] text-jjok">
                 꼭 필요한 열을 못 찾았어요. 열 이름이 다르면 lib/naver-import/columns.ts에 후보를 더해 주세요.
               </p>
             )}
@@ -203,7 +203,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
                           {optionSummary(r).map((o) => ` · ${o}`)}
                         </span>
                       </span>
-                      <span className={`text-[12px] ${isUpdate ? "text-ink-3" : "font-semibold text-jjok"}`}>
+                      <span className={`text-[13px] ${isUpdate ? "text-ink-3" : "font-semibold text-jjok"}`}>
                         {isUpdate ? "갱신" : "새 예약"}
                       </span>
                     </li>
@@ -216,7 +216,7 @@ function ImportFlow({ onClose }: { onClose: () => void }) {
           {parsed.errors.length > 0 && (
             <section>
               <h3 className="mb-2 text-[13px] font-semibold">건너뛸 줄 {parsed.errors.length}</h3>
-              <ul className="flex flex-col gap-1 text-[12.5px] text-ink-2">
+              <ul className="flex flex-col gap-1 text-[13px] text-ink-2">
                 {parsed.errors.map((e) => (
                   <li key={e.row}>
                     {e.row}번째 줄 · {e.reason}
@@ -266,9 +266,9 @@ function NaverFieldGuide() {
           <li key={f.label} className="grid grid-cols-[1fr_auto] items-baseline gap-3 px-3 py-2">
             <span>
               {f.label}
-              <span className="ml-2 text-[12px] text-ink-3">{f.note}</span>
+              <span className="ml-2 text-[13px] text-ink-3">{f.note}</span>
             </span>
-            <span className={`text-[12px] ${f.confirmed ? "text-moss" : "text-ink-3"}`}>
+            <span className={`text-[13px] ${f.confirmed ? "text-moss" : "text-ink-3"}`}>
               {f.confirmed ? "연동 사례에서 확인" : "계정 연결 후 확인"}
             </span>
           </li>

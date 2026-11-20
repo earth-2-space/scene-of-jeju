@@ -243,7 +243,7 @@ function Chip({
   onChange?: () => void;
 }) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] text-ink-2 hover:border-ink-3 has-checked:border-ink has-checked:bg-ink has-checked:text-paper has-focus-visible:outline-2 has-focus-visible:outline-jjok">
+    <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-line px-2.5 py-1.5 text-[13px] text-ink-2 hover:border-ink-3 has-checked:border-ink has-checked:font-semibold has-checked:text-ink has-checked:shadow-[inset_0_0_0_1px_var(--color-ink)] has-focus-visible:outline-2 has-focus-visible:outline-jjok">
       <input type={type} className="sr-only" {...input} />
       {children}
     </label>

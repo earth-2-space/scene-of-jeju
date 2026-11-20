@@ -80,7 +80,7 @@ export function MessagesOverview() {
         ) : (
           <table className="w-full text-[13px]">
             <thead>
-              <tr className="border-y border-line bg-sheet text-left text-[12px] text-ink-3">
+              <tr className="border-y border-line bg-sheet text-left text-[13px] text-ink-3">
                 <th className="px-3 py-2 font-normal">시각</th>
                 <th className="font-normal">안내</th>
                 <th className="font-normal">받는 이</th>

@@ -99,7 +99,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
         {unreviewed && (
           <div className="rounded-lg bg-jjok-soft px-4 py-3">
             <p className="text-[13px] font-semibold text-jjok">네이버에서 바로확정된 새 예약이에요.</p>
-            <p className="mt-0.5 text-[12.5px] text-ink-2">
+            <p className="mt-0.5 text-[13px] text-ink-2">
               손님은 네이버 확정 알림을 이미 받았어요. 확인하면 씬오브제주 카카오 안내와 전날 리마인드가 잡혀요.
             </p>
             <div className="mt-3 flex items-center gap-2">
@@ -128,7 +128,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
                 onClick={() => setStatus(s)}
                 className={`rounded-md border px-2.5 py-1 text-[13px] disabled:cursor-not-allowed ${
                   r.status === s
-                    ? "border-ink bg-ink text-paper"
+                    ? "border-ink font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-ink)]"
                     : locked
                       ? "border-line-2 text-ink-3"
                       : "border-line text-ink-2 hover:border-ink-3 hover:text-ink"
@@ -156,7 +156,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
                   aria-pressed={r.ritualId === rt.id}
                   onClick={() => reservationStore.update(r.id, { ritualId: r.ritualId === rt.id ? null : rt.id })}
                   className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-[13px] ${
-                    r.ritualId === rt.id ? "border-ink bg-ink text-paper" : "border-line text-ink-2 hover:border-ink-3"
+                    r.ritualId === rt.id ? "border-ink font-semibold text-ink shadow-[inset_0_0_0_1px_var(--color-ink)]" : "border-line text-ink-2 hover:border-ink-3"
                   }`}
                 >
                   <span className={`size-2 rounded-full ${rt.family === "blue" ? "bg-jjok" : "bg-moss"}`} />
@@ -177,7 +177,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
             </Row>
             <Row label="수령">
               {PICKUP[r.pickup].label}
-              <span className="block text-[12px] text-ink-3">{PICKUP[r.pickup].note}</span>
+              <span className="block text-[13px] text-ink-3">{PICKUP[r.pickup].note}</span>
             </Row>
             <Row label="안내 언어">{LANG_LABEL[r.lang]}</Row>
             <Row label="들어온 곳">{SOURCE_TEXT[r.source]}</Row>
@@ -191,7 +191,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
                 <>
                   {formatWon(r.naver.payment.amount)} · 네이버페이
                   {r.naver.payment.listAmount && (
-                    <span className="ml-1.5 text-[12px] text-ink-3 line-through">
+                    <span className="ml-1.5 text-[13px] text-ink-3 line-through">
                       {formatWon(r.naver.payment.listAmount)}
                     </span>
                   )}
@@ -204,7 +204,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
             </Row>
             <Row label="현장 결제">
               아이템 {formatWon(itemMin)}~{formatWon(itemMax)}
-              <span className="block text-[12px] text-ink-3">
+              <span className="block text-[13px] text-ink-3">
                 아이템은 현장에서 골라요(1인 1개 기준){r.addOns.extraWork > 0 && " · 추가작업은 피염물 값만"}
               </span>
             </Row>
@@ -227,7 +227,7 @@ function Detail({ r, today, onClose }: { r: Reservation; today: string; onClose:
                         : MESSAGE_KIND_WHEN[kind]}
                     </span>
                     <span
-                      className={`ml-auto text-[12px] ${m?.state === "queued" ? "font-semibold text-jjok" : "text-ink-3"}`}
+                      className={`ml-auto text-[13px] ${m?.state === "queued" ? "font-semibold text-jjok" : "text-ink-3"}`}
                     >
                       {m
                         ? MESSAGE_STATE_LABEL[m.state]

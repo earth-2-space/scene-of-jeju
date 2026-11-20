@@ -10,7 +10,7 @@ export function MailSyncNote() {
   const time = sync.checkedAt.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-ink-3">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-ink-3">
       <span>
         네이버 예약 메일 · {time} 확인
       </span>
